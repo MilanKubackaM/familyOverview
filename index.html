@@ -557,6 +557,15 @@ const fmtAxis = n => (n / 1e6).toLocaleString("sk-SK") + " mil.";
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
 const START_YEAR = 2026, START_MONTH = 8; // september 2026 (0-index 8)
+const MONTH_NAMES = ["január", "február", "marec", "apríl", "máj", "jún",
+                     "júl", "august", "september", "október", "november", "december"];
+const MONTH_LOC = ["januári", "februári", "marci", "apríli", "máji", "júni",
+                   "júli", "auguste", "septembri", "októbri", "novembri", "decembri"];
+/* {y, m} → "marec 2032" (m je 0-indexovaný); null keď moment nie je v projekcii */
+const fmtAt = at => (at && at.m >= 0 && at.m <= 11) ? MONTH_NAMES[at.m] + " " + at.y : null;
+/* {y, m} → "v marci 2032" / "vo februári 2032" */
+const fmtAtIn = at => (at && at.m >= 0 && at.m <= 11)
+  ? (at.m === 1 ? "vo " : "v ") + MONTH_LOC[at.m] + " " + at.y : null;
 
 const IDS = ["milanNet","terkaNet","growth","utilities","insHome","jointVar","pocketM","pocketT",
   "mBal","mRate","mPay","reserve","reserveRate","jointDCA","jointStart","jointRet","reserveCap",
@@ -813,6 +822,7 @@ function simulate(p, withChildren) {
   const sumP = parts => parts.reduce((s, x) => s + x.bal, 0);
   const snapP = parts => parts.map(x => ({ name: x.name, v: x.bal }));
   let mortgagePaid = null, minReserve = reserve, deficitFrom = null;
+  let minReserveAt = null, deficitAt = null, pausedFrom = null;
   let lostIncome = 0, pausedMonths = 0, pausedAmount = 0;
   const yearly = [], monthly = [], mortSeries = [];
 
@@ -857,11 +867,14 @@ function simulate(p, withChildren) {
       const spending = pay + p.utilities * g + p.insHome * g + p.jointVar * g + p.pocketM * g + p.pocketT * g + childCost;
       const avail = reserve * (1 + p.reserveRate / 100 / 12) + (income - spending);
       const dcaJ = Math.min(p.jointDCA, Math.max(0, avail));
-      if (dcaJ < p.jointDCA - 0.01) { pausedMonths++; pausedAmount += p.jointDCA - dcaJ; }
+      if (dcaJ < p.jointDCA - 0.01) {
+        pausedMonths++; pausedAmount += p.jointDCA - dcaJ;
+        if (pausedFrom === null) pausedFrom = { y, m };
+      }
       const surplus = income - spending - dcaJ;
       reserve = avail - dcaJ;
-      if (reserve < minReserve) minReserve = reserve;
-      if (reserve < 0 && deficitFrom === null) deficitFrom = y + (m + 1) / 12;
+      if (reserve < minReserve) { minReserve = reserve; minReserveAt = { y, m }; }
+      if (reserve < 0 && deficitFrom === null) { deficitFrom = y + (m + 1) / 12; deficitAt = { y, m }; }
 
       /* investície */
       let sweep = 0;
@@ -887,7 +900,8 @@ function simulate(p, withChildren) {
   const total = invJ + invM + invT + reserve;
   const firstSurplus = monthly.length ? monthly[0].surplus : 0;
   return { yearly, monthly, mortSeries, total, invJ, invM, invT, reserve,
-           mortgagePaid, minReserve, deficitFrom, firstSurplus, lostIncome, pausedMonths, pausedAmount };
+           mortgagePaid, minReserve, deficitFrom, firstSurplus, lostIncome, pausedMonths, pausedAmount,
+           minReserveAt, deficitAt, pausedFrom };
 }
 
 /* ============ SVG utils ============ */
@@ -1396,24 +1410,41 @@ function buildRecos(p, res) {
   };
   const verifiedNote = " Návrhy nižšie sú prepočítané simuláciou — každý sám o sebe problém odstráni.";
 
+  /* kedy k tomu dôjde a koľko v tom momente chýba */
+  const minAt = fmtAt(res.minReserveAt);                       // mesiac najnižšej rezervy
+  const minAtTxt = fmtAtIn(res.minReserveAt) ? " " + fmtAtIn(res.minReserveAt) : "";
+  const gapToZero = Math.max(0, -res.minReserve);              // koľko chýba, aby rezerva neklesla pod nulu
+  const gapToMin = Math.max(0, minTarget - res.minReserve);    // koľko chýba do 3× fixných výdavkov
+  const worstLine = " Najnižšia rezerva je " + fmt(res.minReserve) + (minAt ? " (" + minAt + ")" : "")
+    + ", do odporúčaného minima " + fmt(minTarget) + " chýba " + fmt(gapToMin) + ".";
+
   if (res.deficitFrom) {
     recos.push({
       id: "reserve-deficit", sev: "critical",
-      title: "Rezerva v projekcii klesne pod nulu (okolo " + Math.floor(res.deficitFrom) + ")",
-      detail: "Počas materskej a rodičovskej výdavky prevýšia príjem natoľko, že spoločná rezerva sa minie — aj po automatickej pauze DCA." + verifiedNote,
+      title: "Rezerva klesne pod nulu " + (fmtAtIn(res.deficitAt) || ("v roku " + Math.floor(res.deficitFrom)))
+        + (fmtAt(res.deficitAt) && fmtAt(res.deficitAt) === minAt
+            ? " — bude chýbať "                                  // najhorší moment je ten istý mesiac
+            : " — v najhoršom momente" + minAtTxt + " bude chýbať ")
+        + fmt(gapToZero),
+      detail: "Počas materskej a rodičovskej výdavky prevýšia príjem natoľko, že spoločná rezerva sa minie — aj po automatickej pauze DCA."
+        + worstLine + verifiedNote,
       fixes: reserveFixes(r => r.minReserve >= 0),
     });
   } else if (res.pausedMonths > 0) {
     recos.push({
       id: "dca-paused", sev: "warning",
-      title: "Počas rodičovskej sa spoločné DCA pozastaví na " + res.pausedMonths + " mesiacov",
-      detail: "Rezerva nestačí na to, aby investovanie bežalo bez prerušenia — model musel vynechať vklady za " + fmt(res.pausedAmount) + "." + verifiedNote,
+      title: "Spoločné DCA sa pozastaví na " + res.pausedMonths + " mesiacov"
+        + (fmtAtIn(res.pausedFrom) ? ", prvý vynechaný vklad " + fmtAtIn(res.pausedFrom) : "")
+        + " — celkom " + fmt(res.pausedAmount),
+      detail: "Rezerva nestačí na to, aby investovanie bežalo bez prerušenia — model musel vynechať vklady za " + fmt(res.pausedAmount) + "."
+        + worstLine + verifiedNote,
       fixes: reserveFixes(r => r.pausedMonths === 0),
     });
   } else if (res.minReserve < minTarget) {
     recos.push({
       id: "reserve-low", sev: "warning",
-      title: "Rezerva v najhoršom momente klesne na " + fmt(Math.max(0, res.minReserve)) + " — pod 3 mesiace fixných výdavkov",
+      title: "Rezerva klesne na " + fmt(Math.max(0, res.minReserve)) + minAtTxt
+        + " — do 3 mesiacov fixných výdavkov chýba " + fmt(gapToMin),
       detail: "Odporúčané minimum je ~3× fixné mesačné výdavky (hypotéka + energie + poistka + potraviny = " + fmt(fixedMonthly) + "/mes., teda " + fmt(minTarget) + "). Pod túto úroveň by rezerva nemala klesnúť ani počas rodičovskej." + verifiedNote,
       fixes: reserveFixes(r => r.minReserve >= minTarget),
     });
