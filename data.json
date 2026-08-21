@@ -1,0 +1,110 @@
+{
+  "v": 1,
+  "savedAt": "2026-08-21T11:03:42.527Z",
+  "inputs": {
+    "milanNet": "70000",
+    "terkaNet": "50000",
+    "growth": "2",
+    "utilities": "8000",
+    "insHome": "686",
+    "jointVar": "15000",
+    "pocketM": "20000",
+    "pocketT": "20000",
+    "mBal": "7000000",
+    "mRate": "4.4",
+    "mPay": "36000",
+    "reserve": "383600",
+    "reserveRate": "4",
+    "jointDCA": "10000",
+    "jointStart": "0",
+    "jointRet": "7",
+    "reserveCap": "900000",
+    "childYear": "2029",
+    "child2Year": "0",
+    "matPct": "75",
+    "rodMonths": "24",
+    "childCost": "6000",
+    "returnPct": "100",
+    "horizon": "2059",
+    "kbTransfer": "45000"
+  },
+  "checks": {
+    "childOn": true,
+    "sweepOn": true
+  },
+  "items": [],
+  "pInv": {
+    "milan": [
+      {
+        "name": "ETF (XTB)",
+        "monthly": 4000,
+        "ret": 7,
+        "start": 24000
+      },
+      {
+        "name": "EIC fondy",
+        "monthly": 0,
+        "ret": 6,
+        "start": 40000
+      }
+    ],
+    "terka": [
+      {
+        "name": "ETF (XTB)",
+        "monthly": 2500,
+        "ret": 7,
+        "start": 0
+      }
+    ]
+  },
+  "envelopes": [
+    {
+      "name": "Auto",
+      "who": "spolocne",
+      "amount": 5000,
+      "target": 25000
+    },
+    {
+      "name": "Bývanie",
+      "who": "spolocne",
+      "amount": 360735,
+      "target": 100000
+    },
+    {
+      "name": "Cestovanie",
+      "who": "terka",
+      "amount": 24200,
+      "target": 25000
+    },
+    {
+      "name": "Cestovanie",
+      "who": "spolocne",
+      "amount": 16568,
+      "target": 70000
+    },
+    {
+      "name": "Oblečenie",
+      "who": "terka",
+      "amount": 0,
+      "target": 5000
+    },
+    {
+      "name": "Osobná rezerva",
+      "who": "terka",
+      "amount": 66782,
+      "target": 100000
+    },
+    {
+      "name": "Spoločná rezerva",
+      "who": "spolocne",
+      "amount": 1340,
+      "target": 250000
+    },
+    {
+      "name": "Osobná rezerva",
+      "who": "milan",
+      "amount": 72000,
+      "target": 100000
+    }
+  ]
+}

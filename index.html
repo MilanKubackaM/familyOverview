@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<title>Finančný plán — Milan &amp; Terka</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='25' font-size='26'%3E%F0%9F%93%88%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light;
+    --page:        #f9f9f7;
+    --surface-1:   #fcfcfb;
+    --text-1:      #0b0b0b;
+    --text-2:      #52514e;
+    --muted:       #898781;
+    --grid:        #e1e0d9;
+    --baseline:    #c3c2b7;
+    --border:      rgba(11,11,11,0.10);
+    --s1: #2a78d6;  /* spoločné investície */
+    --s2: #eb6834;  /* Milan osobné */
+    --s3: #1baf7a;  /* Terka osobné */
+    --s4: #eda100;  /* rezerva + hotovosť */
+    --s7: #4a3aa7;  /* hypotéka */
+    --good:     #006300;
+    --critical: #d03b3b;
+    --warning:  #fab219;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page:        #0d0d0d;
+      --surface-1:   #1a1a19;
+      --text-1:      #ffffff;
+      --text-2:      #c3c2b7;
+      --muted:       #898781;
+      --grid:        #2c2c2a;
+      --baseline:    #383835;
+      --border:      rgba(255,255,255,0.10);
+      --s1: #3987e5;
+      --s2: #d95926;
+      --s3: #199e70;
+      --s4: #c98500;
+      --s7: #9085e9;
+      --good: #0ca30c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text-1);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+  header h1 { font-size: 22px; margin: 0 0 2px; font-weight: 650; }
+  header p  { margin: 0 0 12px; color: var(--text-2); }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
+  .toolbar button {
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-1);
+    border-radius: 8px; padding: 6px 13px; font: inherit; font-size: 12.5px; cursor: pointer;
+  }
+  .toolbar button:hover { border-color: var(--s1); color: var(--s1); }
+  .toolbar button.primary { background: var(--s1); color: #fff; border-color: transparent; font-weight: 650; }
+  .toolbar button.primary:hover { color: #fff; opacity: 0.9; }
+  .toolbar button.primary:disabled { opacity: 0.45; cursor: default; }
+  .toolbar .saveinfo { color: var(--muted); font-size: 12.5px; margin-left: 4px; }
+  .toolbar .saveinfo.dirty { color: var(--warning); }
+  .toolbar .saveinfo.ok { color: var(--good); }
+  .toolbar .saveinfo.err { color: var(--critical); }
+  .tokenbox {
+    display: none; background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 15px; margin-bottom: 20px; font-size: 13px;
+  }
+  .tokenbox.open { display: block; }
+  .tokenbox p { margin: 0 0 9px; color: var(--text-2); }
+  .tokenbox p.warn { margin: 9px 0 0; color: var(--muted); font-size: 12px; }
+  .tokenbox code { background: var(--page); padding: 1px 5px; border-radius: 4px; }
+  .tokenbox .trow { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tokenbox input {
+    flex: 1 1 280px; padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 7px; background: var(--page); color: var(--text-1); font: inherit;
+  }
+  .tokenbox button {
+    border: 1px solid var(--border); background: var(--page); color: var(--text-1);
+    border-radius: 7px; padding: 6px 14px; font: inherit; font-size: 12.5px; cursor: pointer;
+  }
+  .tokenbox button:hover { border-color: var(--s1); color: var(--s1); }
+
+  .settings { columns: 3 300px; column-gap: 36px; }
+  .sgroup { break-inside: avoid; margin-bottom: 20px; }
+  .sgroup h3 {
+    font-size: 13px; font-weight: 650; margin: 0 0 4px; padding-bottom: 5px;
+    border-bottom: 2px solid var(--baseline);
+  }
+  .sgroup .row label { hyphens: none; }
+  .divider { border: 0; border-top: 2px solid var(--baseline); margin: 34px 0 26px; }
+  .persons { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .persons { grid-template-columns: 1fr; } }
+  .personhead { display: flex; align-items: center; gap: 9px; margin: 0 0 10px; }
+  .personhead .dot { width: 13px; height: 13px; border-radius: 4px; }
+  .personhead h2 { font-size: 18px; margin: 0; font-weight: 650; }
+  .ptile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; }
+  .ptile .lbl { color: var(--text-2); font-size: 13px; }
+  .ptile .val { font-size: 24px; font-weight: 650; }
+
+  /* ---------- items list ---------- */
+  .itemform { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .itemform input[type="text"] { flex: 2 1 160px; padding: 6px 9px; border: 1px solid var(--border); border-radius: 7px; background: var(--page); color: var(--text-1); font: inherit; }
+  .itemform input[type="number"] { flex: 1 1 100px; padding: 6px 9px; border: 1px solid var(--border); border-radius: 7px; background: var(--page); color: var(--text-1); font: inherit; text-align: right; }
+  .itemform select { flex: 1 1 110px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 7px; background: var(--page); color: var(--text-1); font: inherit; }
+  .itemform button {
+    flex: 0 0 auto; padding: 6px 16px; border: 0; border-radius: 7px; background: var(--s1); color: #fff;
+    font: inherit; font-weight: 650; cursor: pointer;
+  }
+  .itemform button:hover { opacity: 0.9; }
+  .itemlist { list-style: none; margin: 0; padding: 0; }
+  .itemlist li { display: flex; align-items: center; gap: 10px; padding: 7px 2px; border-bottom: 1px solid var(--grid); font-size: 13px; }
+  .itemlist li:last-child { border-bottom: 0; }
+  .itemlist .inm { flex: 1; }
+  .itemlist .iamt { font-weight: 650; font-variant-numeric: tabular-nums; }
+  .itemlist .ifreq { color: var(--muted); }
+  .itemlist .del { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 6px; }
+  .itemlist .del:hover { color: var(--critical); }
+  .empty { color: var(--muted); font-size: 13px; padding: 6px 2px; }
+
+  /* ---------- obálky (meter) ---------- */
+  .envgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 12px; align-items: start; }
+  @media (max-width: 900px) { .envgrid { grid-template-columns: 1fr; } }
+  .envcol { display: flex; flex-direction: column; gap: 10px; }
+  .envcol .colhead { display: flex; align-items: baseline; gap: 8px; padding-bottom: 2px; border-bottom: 2px solid var(--baseline); }
+  .envcol .colhead .who { font-size: 12px; }
+  .envcol .colhead .sum { margin-left: auto; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .envcol .colempty { color: var(--muted); font-size: 12.5px; padding: 4px 0; }
+
+  /* ---------- bankové toky ---------- */
+  .flowrow { display: grid; grid-template-columns: minmax(160px, 1.6fr) 130px; gap: 12px; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--grid); font-size: 13px; }
+  .flowrow:last-child { border-bottom: 0; }
+  .flowrow .nm { color: var(--text-2); }
+  .flowrow .amt { text-align: right; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .flowrow.total { border-top: 2px solid var(--baseline); font-weight: 650; }
+  .flowrow.total .nm { color: var(--text-1); }
+  .bankcols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 800px) { .bankcols { grid-template-columns: 1fr; } }
+  .bankbox { border: 1px solid var(--border); border-radius: 10px; padding: 12px 15px; }
+  .bankbox h3 { margin: 0 0 4px; font-size: 14px; }
+  .bankbox .desc { color: var(--muted); font-size: 12.5px; margin: 0 0 8px; }
+  .env { border: 1px solid var(--border); border-radius: 10px; padding: 10px 13px; }
+  .env .top { display: flex; align-items: baseline; gap: 8px; }
+  .env .who { font-size: 11px; border-radius: 99px; padding: 1px 8px; color: var(--text-2); border: 1px solid var(--border); flex: none; }
+  .env .enm { font-weight: 650; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .env .eamt { font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .env .meter { height: 7px; border-radius: 99px; margin: 8px 0 5px; overflow: hidden; }
+  .env .meter .fill { height: 100%; border-radius: 99px; }
+  .env .foot { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; }
+  .env .edel { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0 2px; flex: none; }
+  .env .edel:hover { color: var(--critical); }
+  .envtotals { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; font-size: 13px; color: var(--text-2); border-top: 1px solid var(--grid); padding-top: 10px; }
+  .envtotals b { color: var(--text-1); font-variant-numeric: tabular-nums; }
+  .envtotals button { border: 1px solid var(--border); background: var(--page); color: var(--text-1); border-radius: 7px; padding: 5px 12px; font: inherit; font-size: 12.5px; cursor: pointer; margin-left: auto; }
+  .envtotals button:hover { border-color: var(--s1); color: var(--s1); }
+
+  /* ---------- cash flow sumár ---------- */
+  .cfbar { display: flex; gap: 2px; height: 16px; border-radius: 99px; overflow: hidden; margin: 10px 0 6px; }
+  .cfbar .seg { height: 100%; }
+  .cflegend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-2); margin-bottom: 14px; }
+  .cfrow { display: grid; grid-template-columns: minmax(170px, 1.5fr) 1fr 115px 62px; gap: 12px; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--grid); font-size: 13px; }
+  .cfrow:last-child { border-bottom: 0; }
+  .cfrow .nm { color: var(--text-2); min-width: 0; }
+  .cfrow .bar { height: 8px; }
+  .cfrow .bar i { display: block; height: 100%; border-radius: 99px; }
+  .cfrow .amt { text-align: right; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cfrow .pct { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cfrow.total { border-top: 2px solid var(--baseline); border-bottom: 0; font-weight: 650; }
+  .cfrow.total .nm { color: var(--text-1); }
+  .cfsec { font-weight: 650; font-size: 13px; margin: 14px 0 2px; }
+  @media (max-width: 700px) { .cfrow { grid-template-columns: minmax(120px, 1.2fr) 90px 56px; } .cfrow .bar { display: none; } }
+
+  /* ---------- inputs ---------- */
+  fieldset {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    margin: 0 0 12px; padding: 12px 14px 14px;
+  }
+  legend { font-weight: 650; font-size: 13px; padding: 0 6px; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 7px 0; }
+  .row label { color: var(--text-2); font-size: 13px; flex: 1; }
+  .row input[type="number"] {
+    width: 108px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 7px;
+    background: var(--page); color: var(--text-1); font: inherit; text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--s1); }
+  .unit { color: var(--muted); font-size: 12px; width: 34px; }
+  .hint { color: var(--muted); font-size: 12px; margin: 2px 0 0; }
+  .flag { font-size: 11px; border: 1px solid var(--border); border-radius: 99px; padding: 1px 8px; color: var(--text-2); }
+
+  /* ---------- cards / tiles ---------- */
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 20px; position: relative;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 2px; font-weight: 650; }
+  .card .sub { color: var(--text-2); font-size: 13px; margin: 0 0 12px; }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .tile .lbl { color: var(--text-2); font-size: 13px; }
+  .tile .val { font-size: 26px; font-weight: 650; margin-top: 2px; }
+  .tile.hero .val { font-size: 34px; }
+  .tile .delta { font-size: 13px; margin-top: 2px; color: var(--text-2); }
+  .delta .up { color: var(--good); }
+  .delta .down { color: var(--critical); }
+
+  /* ---------- legend ---------- */
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 4px 0 10px; font-size: 13px; color: var(--text-2); }
+  .legend .k { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .linekey { width: 16px; height: 2px; border-radius: 1px; display: inline-block; }
+
+  svg text { font: 11.5px system-ui, -apple-system, "Segoe UI", sans-serif; fill: var(--muted); }
+  svg .endlabel { fill: var(--text-2); font-weight: 600; }
+
+  /* ---------- tooltip ---------- */
+  .tip {
+    position: absolute; pointer-events: none; z-index: 5; display: none;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 9px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 8px 11px; min-width: 170px; font-size: 12.5px;
+  }
+  .tip .t { color: var(--text-2); margin-bottom: 4px; }
+  .tip .r { display: flex; align-items: center; gap: 7px; margin: 2px 0; }
+  .tip .r .lk { width: 14px; height: 3px; border-radius: 2px; flex: none; }
+  .tip .r .nm { color: var(--text-2); flex: 1; }
+  .tip .r .v  { font-weight: 650; font-variant-numeric: tabular-nums; }
+
+  /* ---------- table ---------- */
+  details.tbl summary { cursor: pointer; color: var(--text-2); font-size: 13px; margin: 4px 0 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  th, td { text-align: right; padding: 5px 9px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--text-2); font-weight: 600; }
+
+  /* ---------- odporúčania ---------- */
+  #recoBox { margin-bottom: 20px; }
+  .reco {
+    border: 1px solid var(--border); border-left: 4px solid var(--warning);
+    border-radius: 9px; margin-bottom: 8px; background: var(--surface-1); font-size: 13px; overflow: hidden;
+  }
+  .reco.critical { border-left-color: var(--critical); }
+  .reco.info { border-left-color: var(--s1); }
+  .reco .rhead {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    border: 0; background: none; color: var(--text-1); font: inherit; padding: 10px 14px; cursor: pointer;
+  }
+  .reco .rhead:hover { background: color-mix(in srgb, var(--text-1) 4%, transparent); }
+  .reco .rhead .ric { flex: none; font-weight: 700; }
+  .reco.critical .ric { color: var(--critical); }
+  .reco.warning .ric { color: var(--warning); }
+  .reco.info .ric { color: var(--s1); }
+  .reco .rhead .chev { margin-left: auto; color: var(--muted); transition: transform 0.15s; }
+  .reco.open .chev { transform: rotate(90deg); }
+  .reco .rbody { display: none; padding: 2px 16px 12px 38px; }
+  .reco.open .rbody { display: block; }
+  .reco .rbody p { margin: 0 0 8px; color: var(--text-2); }
+  .reco .fixrow {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    padding: 7px 0; border-top: 1px solid var(--grid);
+  }
+  .reco .fixrow .fx { flex: 1 1 280px; }
+  .reco .fixrow .fx b { font-variant-numeric: tabular-nums; }
+  .reco .fixrow button {
+    border: 1px solid var(--border); background: var(--page); color: var(--text-1);
+    border-radius: 7px; padding: 4px 12px; font: inherit; font-size: 12.5px; cursor: pointer;
+  }
+  .reco .fixrow button:hover { border-color: var(--s1); color: var(--s1); }
+  .reco .fixrow a { color: var(--s1); font-size: 12.5px; cursor: pointer; text-decoration: none; }
+  .reco .fixrow a:hover { text-decoration: underline; }
+  .allok { color: var(--good); font-size: 13px; padding: 8px 2px; }
+  .hl {
+    outline: 2px solid var(--warning) !important; outline-offset: 2px;
+    animation: hlpulse 1.6s ease-in-out infinite;
+  }
+  @keyframes hlpulse { 0%, 100% { outline-color: var(--warning); } 50% { outline-color: transparent; } }
+  .note { color: var(--muted); font-size: 12.5px; margin-top: 26px; line-height: 1.6; }
+  .note strong { color: var(--text-2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Finančný plán — Milan &amp; Terka</h1>
+    <p>Interaktívny model vašich financií · predvyplnené podľa stavu august 2026 · všetky hodnoty si môžete meniť</p>
+    <div class="toolbar">
+      <button type="button" id="btnSaveShared" class="primary">☁ Uložiť pre všetkých</button>
+      <button type="button" id="btnReload">↺ Načítať zdieľané</button>
+      <button type="button" id="btnExport">⭳ Do súboru</button>
+      <button type="button" id="btnImport">⭱ Zo súboru</button>
+      <button type="button" id="btnToken">🔑 Token</button>
+      <input type="file" id="fileInput" accept="application/json,.json" style="display:none">
+      <span class="saveinfo" id="saveInfo">Načítavam zdieľané hodnoty…</span>
+    </div>
+    <div class="tokenbox" id="tokenBox">
+      <p>Aby sa zmeny uložili pre všetky zariadenia, treba GitHub token s oprávnením <b>Contents: Read and write</b> na repozitár <code>familyOverview</code>. Uloží sa len do tohto prehliadača — nikdy sa neposiela do repozitára ani nikam inam.</p>
+      <div class="trow">
+        <input type="password" id="tokenInput" placeholder="github_pat_…" autocomplete="off">
+        <button type="button" id="btnTokenSave">Uložiť token</button>
+        <button type="button" id="btnTokenClear">Odstrániť</button>
+      </div>
+      <p class="warn">Nezadávaj token na cudzom ani zdieľanom počítači.</p>
+    </div>
+  </header>
+
+  <!-- ================= SPOLOČNÝ PREHĽAD ================= -->
+  <div id="recoBox"></div>
+
+  <div class="card">
+        <h2>Kam ide výplata — mesačný sumár dnes</h2>
+        <p class="sub">Prehľad spoločných tokov v sumách aj % z príjmu domácnosti — vreckové je tu vcelku (osobné investície a subscriptions sú vnútri vreckového). Prepočítava sa pri každej zmene vstupov; stav „dnes", bez dieťaťa a jednorazových položiek.</p>
+        <div class="cfbar" id="cfBar"></div>
+        <div class="cflegend" id="cfLegend"></div>
+        <div id="cfRows"></div>
+  </div>
+
+  <div class="card">
+        <h2>Bankové toky</h2>
+        <p class="sub">Ako tečú peniaze medzi účtami — KB je izolovaná na bývanie, Air Bank je na všetko ostatné.</p>
+        <div class="bankcols">
+          <div class="bankbox">
+            <h3>KB — účet na bývanie</h3>
+            <p class="desc">Mesačne naň posielate pevnú sumu, z ktorej sa platí hypotéka, poistka na byt a energie. Izolovaný od ostatných financií.</p>
+            <div class="flowrow"><span class="nm">Prevod na KB / mes.</span><span class="amt"><input type="number" id="kbTransfer" value="45000" step="500" style="width:110px;padding:4px 8px;border:1px solid var(--border);border-radius:7px;background:var(--page);color:var(--text-1);font:inherit;text-align:right"></span></div>
+            <div id="kbRows"></div>
+          </div>
+          <div class="bankbox">
+            <h3>Air Bank — všetko ostatné</h3>
+            <p class="desc">Sem chodia výplaty; platia sa odtiaľ potraviny, vreckové a spoločné investície, zvyšok sa drží v obálkach nižšie.</p>
+            <div id="abRows"></div>
+          </div>
+        </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="card">
+    <h2>Nastavenia modelu</h2>
+    <p class="sub">Spoločné vstupy projekcie — osobné financie každého z vás sú v stĺpcoch nižšie</p>
+    <div class="settings">
+      <section class="sgroup">
+        <h3>Spoločné výdavky (mes.)</h3>
+        <div class="row"><label for="utilities">Energie + internet + SVJ</label><input type="number" id="utilities" value="8000" step="500"><span class="unit">Kč</span></div>
+        <div class="row"><label for="insHome">Poistka na byt</label><input type="number" id="insHome" value="686" step="10"><span class="unit">Kč</span></div>
+        <div class="row"><label for="jointVar">Variabilné (potraviny…)</label><input type="number" id="jointVar" value="15000" step="1000"><span class="unit">Kč</span></div>
+        <div class="row"><label for="growth">Rast príjmov aj výdavkov</label><input type="number" id="growth" value="2" step="0.5"><span class="unit">% p.a.</span></div>
+      </section>
+
+      <section class="sgroup">
+        <h3>Hypotéka</h3>
+        <div class="row"><label for="mBal">Zostatok úveru <span class="flag">odhad</span></label><input type="number" id="mBal" value="7000000" step="100000"><span class="unit">Kč</span></div>
+        <div class="row"><label for="mRate">Úroková sadzba</label><input type="number" id="mRate" value="4.4" step="0.1"><span class="unit">%</span></div>
+        <div class="row"><label for="mPay">Mesačná splátka</label><input type="number" id="mPay" value="36000" step="500"><span class="unit">Kč</span></div>
+        <p class="hint">Fixácia do januára 2029 — potom sa dá sadzba prejednať.</p>
+      </section>
+
+      <section class="sgroup">
+        <h3>Horizont</h3>
+        <div class="row"><label for="horizon">Projekcia do roku</label><input type="number" id="horizon" value="2059" min="2030" max="2070" step="1"><span class="unit"></span></div>
+        <p class="hint">2059 = vašich 60 rokov.</p>
+      </section>
+
+      <section class="sgroup">
+        <h3>Spoločná rezerva</h3>
+        <div class="row"><label for="reserve">Rezerva + hotovosť (dnes)</label><input type="number" id="reserve" value="383600" step="10000"><span class="unit">Kč</span></div>
+        <div class="row"><label for="reserveRate">Úrok na rezerve</label><input type="number" id="reserveRate" value="4" step="0.1"><span class="unit">% p.a.</span></div>
+        <div class="row"><label for="sweepOn">Prebytok nad strop investovať</label><input type="checkbox" id="sweepOn" checked></div>
+        <div class="row"><label for="reserveCap">Strop rezervy</label><input type="number" id="reserveCap" value="900000" step="50000"><span class="unit">Kč</span></div>
+        <p class="hint">Rezerva = súčet spoločných (TKVMK) obálok. Strop nechajte vyšší, kým plánujete dieťa — rodičovská ukrojí ~700 tis.; bez detí stačí ~500–600 tis.</p>
+      </section>
+
+      <section class="sgroup">
+        <h3>Spoločné investície</h3>
+        <div class="row"><label for="jointDCA">Mesačný vklad (DCA)</label><input type="number" id="jointDCA" value="10000" step="1000"><span class="unit">Kč</span></div>
+        <div class="row"><label for="jointStart">Zainvestované (dnes)</label><input type="number" id="jointStart" value="0" step="10000"><span class="unit">Kč</span></div>
+        <div class="row"><label for="jointRet">Očakávaný výnos</label><input type="number" id="jointRet" value="7" step="0.5"><span class="unit">% p.a.</span></div>
+        <p class="hint">Sem tečie aj prebytok zo „sweep" pravidla rezervy.</p>
+      </section>
+
+      <section class="sgroup">
+        <h3>Dieťa</h3>
+        <div class="row"><label for="childOn">Počítať s dieťaťom</label><input type="checkbox" id="childOn" checked></div>
+        <div class="row"><label for="childYear">Rok narodenia</label><input type="number" id="childYear" value="2029" min="2027" max="2045" step="1"><span class="unit"></span></div>
+        <div class="row"><label for="child2Year">Druhé dieťa (0 = nie)</label><input type="number" id="child2Year" value="0" min="0" max="2045" step="1"><span class="unit"></span></div>
+        <div class="row"><label for="matPct">Materská — % čistého</label><input type="number" id="matPct" value="75" step="5"><span class="unit">%</span></div>
+        <div class="row"><label for="rodMonths">Čerpanie rodičovského</label><input type="number" id="rodMonths" value="24" min="6" max="48" step="1"><span class="unit">mes.</span></div>
+        <div class="row"><label for="childCost">Náklady na dieťa / mes.</label><input type="number" id="childCost" value="6000" step="500"><span class="unit">Kč</span></div>
+        <div class="row"><label for="returnPct">Terkin úväzok potom</label><input type="number" id="returnPct" value="100" min="0" max="100" step="10"><span class="unit">%</span></div>
+        <p class="hint">Materská trvá 28 týždňov, rodičovský príspevok je 350 000 Kč.</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="card">
+        <h2>Air Bank obálky</h2>
+        <p class="sub">Rozdelenie sporenia podľa vlastníka — Terkin Air Bank (2,6 % do 500 tis.) nesie spoločné aj jej obálky, Milanov Air Bank jeho rezervu. Obálky si môžete pridávať a mazať; do modelu vstupuje súčet spoločných obálok ako rezerva.</p>
+        <div class="itemform">
+          <input type="text" id="envName" placeholder="Názov obálky" maxlength="40">
+          <select id="envWho">
+            <option value="spolocne">Spoločné</option>
+            <option value="terka">Terka</option>
+            <option value="milan">Milan</option>
+          </select>
+          <input type="number" id="envAmount" placeholder="Aktuálne Kč" step="100" min="0">
+          <input type="number" id="envTarget" placeholder="Cieľ Kč" step="1000" min="0">
+          <button type="button" id="envAdd">+ Pridať</button>
+        </div>
+        <div class="envgrid" id="envGrid"></div>
+        <div class="envtotals" id="envTotals"></div>
+  </div>
+
+  <div class="card">
+        <h2>Ďalšie príjmy a výdavky</h2>
+        <p class="sub">Pridajte čokoľvek navyše — bonus, prenájom, poistky, krúžky… Jednorazové položky sa započítajú v zadanom roku, pravidelné počas celej projekcie. Zoznam sa neukladá po zatvorení stránky.</p>
+        <div class="itemform">
+          <input type="text" id="itName" placeholder="Názov (napr. ročný bonus)" maxlength="60">
+          <input type="number" id="itAmount" placeholder="Suma v Kč" step="100" min="0">
+          <select id="itKind">
+            <option value="prijem">Príjem</option>
+            <option value="vydavok">Výdavok</option>
+          </select>
+          <select id="itFreq">
+            <option value="mesacne">Mesačne</option>
+            <option value="denne">Denne</option>
+            <option value="tyzdenne">Týždenne</option>
+            <option value="rocne">Ročne</option>
+            <option value="jednorazovo">Jednorazovo</option>
+          </select>
+          <input type="number" id="itYear" value="2027" min="2026" max="2070" step="1" title="Rok jednorazovej položky" style="display:none; flex:0 1 90px">
+          <button type="button" id="itAdd">+ Pridať</button>
+        </div>
+        <ul class="itemlist" id="itemList"></ul>
+        <p class="empty" id="itemEmpty">Zatiaľ žiadne položky — všetko beží podľa základných vstupov vyššie.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="card">
+        <h2>Vývoj majetku</h2>
+        <p class="sub">Stav na konci roka, v mil. Kč — prejdite myšou po stĺpcoch pre presné hodnoty</p>
+        <div class="legend">
+          <span class="k"><span class="swatch" style="background:var(--s1)"></span>Spoločné investície</span>
+          <span class="k"><span class="swatch" style="background:var(--s2)"></span>Milan — osobné</span>
+          <span class="k"><span class="swatch" style="background:var(--s3)"></span>Terka — osobné</span>
+          <span class="k"><span class="swatch" style="background:var(--s4)"></span>Rezerva + hotovosť</span>
+        </div>
+        <svg id="wealthChart" width="100%" height="320" role="img" aria-label="Stĺpcový graf vývoja majetku po rokoch"></svg>
+        <div class="tip" id="wealthTip"></div>
+        <details class="tbl">
+          <summary>Zobraziť tabuľku hodnôt</summary>
+          <div style="overflow-x:auto"><table id="wealthTable"></table></div>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2>Mesačný prebytok spoločného účtu</h2>
+        <p class="sub">Koľko mesačne pribúda do rezervy (po všetkých výdavkoch a investíciách) — priehlbina ukazuje materskú a rodičovskú</p>
+        <svg id="surplusChart" width="100%" height="220" role="img" aria-label="Čiarový graf mesačného prebytku"></svg>
+        <div class="tip" id="surplusTip"></div>
+      </div>
+
+      <div class="card">
+        <h2>Zostatok hypotéky</h2>
+        <p class="sub">Splátka 36 000 Kč/mes. pri zadanej sadzbe — bez mimoriadnych splátok</p>
+        <svg id="mortgageChart" width="100%" height="200" role="img" aria-label="Čiarový graf zostatku hypotéky"></svg>
+        <div class="tip" id="mortgageTip"></div>
+      </div>
+
+  <!-- ================= OSOBNÉ FINANCIE ================= -->
+  <hr class="divider">
+
+  <div class="persons">
+    <div>
+      <div class="personhead"><span class="dot" style="background:var(--s2)"></span><h2>Milan</h2></div>
+      <div class="ptile">
+        <div class="lbl" id="milanTileLbl">Osobný majetok v roku 2059</div>
+        <div class="val" id="milanTileVal">—</div>
+      </div>
+      <fieldset>
+        <legend>Osobné financie</legend>
+        <div class="row"><label for="milanNet">Príjem — na účet (čistý / mes.)</label><input type="number" id="milanNet" value="70000" step="1000"><span class="unit">Kč</span></div>
+        <div class="row"><label for="pocketM">Vreckové / mes.</label><input type="number" id="pocketM" value="20000" step="1000"><span class="unit">Kč</span></div>
+      </fieldset>
+      <div class="card">
+        <h2>Investície</h2>
+        <p class="sub">Pridaj ľubovoľne veľa investícií — každá má vlastný mesačný vklad, výnos aj už zainvestovanú sumu. Vklady idú z vreckového.</p>
+        <div class="itemform">
+          <input type="text" id="mInvName" placeholder="Čo to je (napr. ETF na XTB)" maxlength="60">
+          <input type="number" id="mInvMonthly" placeholder="Kč / mes." title="Mesačný vklad v Kč" step="100" min="0">
+          <input type="number" id="mInvRet" placeholder="% p.a." title="Očakávaný výnos % ročne" step="0.5">
+          <input type="number" id="mInvStart" placeholder="Zainvestované Kč" title="Už zainvestovaná suma dnes" step="1000" min="0">
+          <button type="button" id="mInvAdd">+ Pridať</button>
+        </div>
+        <ul class="itemlist" id="mInvList"></ul>
+      </div>
+      <div class="card">
+        <h2>Vývoj osobných investícií</h2>
+        <svg id="milanChart" width="100%" height="170" role="img" aria-label="Čiarový graf Milanových osobných investícií"></svg>
+        <div class="tip" id="milanTip"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="personhead"><span class="dot" style="background:var(--s3)"></span><h2>Terka</h2></div>
+      <div class="ptile">
+        <div class="lbl" id="terkaTileLbl">Osobný majetok v roku 2059</div>
+        <div class="val" id="terkaTileVal">—</div>
+      </div>
+      <fieldset>
+        <legend>Osobné financie</legend>
+        <div class="row"><label for="terkaNet">Príjem — na účet (čistý / mes.)</label><input type="number" id="terkaNet" value="50000" step="1000"><span class="unit">Kč</span></div>
+        <div class="row"><label for="pocketT">Vreckové / mes.</label><input type="number" id="pocketT" value="20000" step="1000"><span class="unit">Kč</span></div>
+      </fieldset>
+      <div class="card">
+        <h2>Investície</h2>
+        <p class="sub">Pridaj ľubovoľne veľa investícií — každá má vlastný mesačný vklad, výnos aj už zainvestovanú sumu. Vklady idú z vreckového.</p>
+        <div class="itemform">
+          <input type="text" id="tInvName" placeholder="Čo to je (napr. ETF na XTB)" maxlength="60">
+          <input type="number" id="tInvMonthly" placeholder="Kč / mes." title="Mesačný vklad v Kč" step="100" min="0">
+          <input type="number" id="tInvRet" placeholder="% p.a." title="Očakávaný výnos % ročne" step="0.5">
+          <input type="number" id="tInvStart" placeholder="Zainvestované Kč" title="Už zainvestovaná suma dnes" step="1000" min="0">
+          <button type="button" id="tInvAdd">+ Pridať</button>
+        </div>
+        <ul class="itemlist" id="tInvList"></ul>
+      </div>
+      <div class="card">
+        <h2>Vývoj osobných investícií</h2>
+        <svg id="terkaChart" width="100%" height="170" role="img" aria-label="Čiarový graf Terkiných osobných investícií"></svg>
+        <div class="tip" id="terkaTip"></div>
+      </div>
+    </div>
+  </div>
+
+      <p class="note">
+        <strong>Predpoklady modelu:</strong> výnosy sú nominálne a konštantné (reálne trhy kolíšu); vklady (DCA) sú v nominálnej výške, ktorú zadáte; príjmy a výdavky rastú zadaným tempom, splátka hypotéky nie; úrok na rezerve sa počíta z celého zostatku (banky ho typicky dávajú len do ~500 tis. Kč); materská je zjednodušená ako % čistého platu na 7 mesiacov, rodičovský príspevok 350 000 Kč sa čerpá rovnomerne; náklady na dieťa sa počítajú do jeho 22 rokov; ak je zapnuté „prebytok nad strop rezervy investovať", všetko nad strop sa mesačne presúva do spoločných investícií (vaše „sweep" pravidlo); osobné investície idú z vreckového, preto neovplyvňujú spoločný prebytok; predaj ETF po 3+ rokoch je v ČR od dane oslobodený, preto sa dane z výnosov nemodelujú. <strong>Mimo modelu:</strong> hodnota bytu, penzijká (❓ doplniť po zistení v práci), Milanov Air Bank (72 000 Kč), Terkine osobné Air Bank obálky (~91 tis. Kč), životné poistenie 160 €/mes. (poistka na byt 686 Kč v modeli je).
+        <br><br><em>Toto nie je licencované finančné poradenstvo — je to plánovací nástroj; rozhodnutia sú vaše.</em>
+      </p>
+</div>
+
+<script>
+"use strict";
+/* ============ helpers ============ */
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString("sk-SK") + " Kč";
+const fmtM = n => {
+  const m = n / 1e6;
+  return (Math.abs(m) >= 10 ? m.toFixed(1) : m.toFixed(2)).replace(".", ",") + " mil. Kč";
+};
+const fmtAxis = n => (n / 1e6).toLocaleString("sk-SK") + " mil.";
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+const START_YEAR = 2026, START_MONTH = 8; // september 2026 (0-index 8)
+
+const IDS = ["milanNet","terkaNet","growth","utilities","insHome","jointVar","pocketM","pocketT",
+  "mBal","mRate","mPay","reserve","reserveRate","jointDCA","jointStart","jointRet","reserveCap",
+  "childYear","child2Year","matPct","rodMonths","childCost","returnPct","horizon","kbTransfer"];
+
+function readParams() {
+  const p = {};
+  for (const id of IDS) p[id] = parseFloat($(id).value) || 0;
+  p.childOn = $("childOn").checked;
+  p.sweepOn = $("sweepOn").checked;
+  p.horizon = Math.max(2028, Math.min(2070, Math.round(p.horizon) || 2059));
+  p.items = items;
+  p.milanInv = pInv.milan;
+  p.terkaInv = pInv.terka;
+  return p;
+}
+
+/* ============ Air Bank obálky ============ */
+const envelopes = [
+  { name: "Auto",             who: "spolocne", amount: 5000,   target: 25000 },
+  { name: "Bývanie",          who: "spolocne", amount: 360735, target: 100000 },
+  { name: "Cestovanie",       who: "terka",    amount: 24200,  target: 25000 },
+  { name: "Cestovanie",       who: "spolocne", amount: 16568,  target: 70000 },
+  { name: "Oblečenie",        who: "terka",    amount: 0,      target: 5000 },
+  { name: "Osobná rezerva",   who: "terka",    amount: 66782,  target: 100000 },
+  { name: "Spoločná rezerva", who: "spolocne", amount: 1340,   target: 250000 },
+  { name: "Osobná rezerva", who: "milan", amount: 72000, target: 100000 },
+];
+const WHO = {
+  spolocne: { lbl: "Spoločné", color: "--s1" },
+  terka:    { lbl: "Terka",    color: "--s3" },
+  milan:    { lbl: "Milan",    color: "--s2" },
+};
+function envSum(who) { return envelopes.filter(e => e.who === who).reduce((s, e) => s + e.amount, 0); }
+function envBox(e) {
+    const c = css(WHO[e.who].color);
+    const box = document.createElement("div"); box.className = "env";
+    const top = document.createElement("div"); top.className = "top";
+    const who = document.createElement("span"); who.className = "who"; who.textContent = WHO[e.who].lbl;
+    who.style.borderColor = c; who.style.color = c;
+    const nm = document.createElement("span"); nm.className = "enm"; nm.textContent = e.name;
+    const amt = document.createElement("span"); amt.className = "eamt"; amt.textContent = fmt(e.amount);
+    const del = document.createElement("button"); del.className = "edel"; del.type = "button";
+    del.textContent = "✕"; del.title = "Odstrániť";
+    del.addEventListener("click", () => {
+      const idx = envelopes.indexOf(e);
+      if (idx >= 0) envelopes.splice(idx, 1);
+      renderEnvelopes(); markDirty();
+    });
+    top.append(who, nm, amt, del);
+    const meter = document.createElement("div"); meter.className = "meter";
+    meter.style.background = "color-mix(in srgb, " + c + " 18%, var(--surface-1))";
+    const fill = document.createElement("div"); fill.className = "fill";
+    const pct = e.target > 0 ? e.amount / e.target * 100 : 0;
+    fill.style.width = Math.min(100, pct) + "%";
+    fill.style.background = c;
+    meter.appendChild(fill);
+    const foot = document.createElement("div"); foot.className = "foot";
+    const l = document.createElement("span"); l.textContent = Math.round(pct) + " % z cieľa " + fmt(e.target);
+    const r = document.createElement("span");
+    r.textContent = pct >= 100 ? (pct > 110 ? "preplnená" : "splnené ✓") : "chýba " + fmt(Math.max(0, e.target - e.amount));
+    foot.append(l, r);
+    box.append(top, meter, foot);
+    return box;
+}
+function renderEnvelopes() {
+  const grid = $("envGrid");
+  grid.replaceChildren();
+  ["spolocne", "terka", "milan"].forEach(who => {
+    const col = document.createElement("div"); col.className = "envcol";
+    const head = document.createElement("div"); head.className = "colhead";
+    const chip = document.createElement("span"); chip.className = "who";
+    const c = css(WHO[who].color);
+    chip.textContent = WHO[who].lbl; chip.style.borderColor = c; chip.style.color = c;
+    chip.style.border = "1px solid " + c; chip.style.borderRadius = "99px"; chip.style.padding = "1px 9px";
+    const sum = document.createElement("span"); sum.className = "sum"; sum.textContent = fmt(envSum(who));
+    head.append(chip, sum);
+    col.appendChild(head);
+    const list = envelopes.filter(e => e.who === who);
+    if (!list.length) {
+      const em = document.createElement("div"); em.className = "colempty";
+      em.textContent = "Žiadne obálky — pridaj cez formulár vyššie.";
+      col.appendChild(em);
+    } else {
+      list.forEach(e => col.appendChild(envBox(e)));
+    }
+    grid.appendChild(col);
+  });
+  /* súčty */
+  const tot = $("envTotals");
+  tot.replaceChildren();
+  const mkTot = (label, v, colorVar) => {
+    const s = document.createElement("span");
+    const b = document.createElement("b"); b.textContent = fmt(v);
+    if (colorVar) {
+      const sw = document.createElement("span"); sw.className = "swatch";
+      sw.style.cssText = "background:" + css(colorVar) + ";margin-right:5px;vertical-align:-1px;";
+      s.appendChild(sw);
+    }
+    s.append(label + " ");
+    s.appendChild(b);
+    tot.appendChild(s);
+  };
+  mkTot("Terkin Air Bank (spoločné + Terka)", envSum("spolocne") + envSum("terka"), "--s3");
+  mkTot("Milanov Air Bank", envSum("milan"), "--s2");
+  mkTot("Sporenie spolu", envelopes.reduce((s, e) => s + e.amount, 0), null);
+  const btn = document.createElement("button"); btn.type = "button";
+  btn.textContent = "→ použiť spoločný súčet ako rezervu v modeli";
+  btn.addEventListener("click", () => { $("reserve").value = Math.round(envSum("spolocne")); onEdit(); });
+  tot.appendChild(btn);
+}
+$("envAdd").addEventListener("click", () => {
+  const name = $("envName").value.trim();
+  const amount = Math.max(0, parseFloat($("envAmount").value) || 0);
+  const target = Math.max(0, parseFloat($("envTarget").value) || 0);
+  if (!name) { $("envName").focus(); return; }
+  envelopes.push({ name, who: $("envWho").value, amount, target });
+  $("envName").value = ""; $("envAmount").value = ""; $("envTarget").value = "";
+  renderEnvelopes(); markDirty();
+});
+["envName", "envAmount", "envTarget"].forEach(id =>
+  $(id).addEventListener("keydown", e => { if (e.key === "Enter") $("envAdd").click(); }));
+
+/* ============ osobné investície (zoznamy) ============ */
+const pInv = {
+  milan: [
+    { name: "ETF (XTB)", monthly: 4000, ret: 7, start: 24000 },
+    { name: "EIC fondy", monthly: 0, ret: 6, start: 40000 },
+  ],
+  terka: [
+    { name: "ETF (XTB)", monthly: 2500, ret: 7, start: 0 },
+  ],
+};
+const INV_UI = {
+  milan: { list: "mInvList", name: "mInvName", monthly: "mInvMonthly", ret: "mInvRet", start: "mInvStart", add: "mInvAdd", color: "var(--s2)" },
+  terka: { list: "tInvList", name: "tInvName", monthly: "tInvMonthly", ret: "tInvRet", start: "tInvStart", add: "tInvAdd", color: "var(--s3)" },
+};
+function renderInv(who) {
+  const ui = INV_UI[who];
+  const ul = $(ui.list);
+  ul.replaceChildren();
+  if (!pInv[who].length) {
+    const li = document.createElement("li");
+    li.className = "empty"; li.textContent = "Zatiaľ žiadne investície — pridaj prvú tlačidlom +.";
+    ul.appendChild(li);
+    return;
+  }
+  pInv[who].forEach((iv, i) => {
+    const li = document.createElement("li");
+    const dot = document.createElement("span"); dot.className = "swatch"; dot.style.background = ui.color;
+    const nm = document.createElement("span"); nm.className = "inm"; nm.textContent = iv.name;
+    const amt = document.createElement("span"); amt.className = "iamt"; amt.textContent = fmt(iv.start);
+    const fr = document.createElement("span"); fr.className = "ifreq";
+    fr.textContent = "+" + Math.round(iv.monthly).toLocaleString("sk-SK") + " Kč/mes. · " + iv.ret.toLocaleString("sk-SK") + " %";
+    const del = document.createElement("button"); del.className = "del"; del.type = "button";
+    del.textContent = "✕"; del.title = "Odstrániť";
+    del.addEventListener("click", () => { pInv[who].splice(i, 1); renderInv(who); onEdit(); });
+    li.append(dot, nm, amt, fr, del);
+    ul.appendChild(li);
+  });
+}
+function setupInv(who) {
+  const ui = INV_UI[who];
+  $(ui.add).addEventListener("click", () => {
+    const name = $(ui.name).value.trim();
+    const monthly = Math.max(0, parseFloat($(ui.monthly).value) || 0);
+    const ret = parseFloat($(ui.ret).value);
+    const start = Math.max(0, parseFloat($(ui.start).value) || 0);
+    if (!name) { $(ui.name).focus(); return; }
+    if (!(monthly > 0) && !(start > 0)) { $(ui.monthly).focus(); return; }
+    pInv[who].push({ name, monthly, ret: isFinite(ret) ? ret : 7, start });
+    $(ui.name).value = ""; $(ui.monthly).value = ""; $(ui.ret).value = ""; $(ui.start).value = "";
+    renderInv(who); onEdit();
+  });
+  [ui.name, ui.monthly, ui.ret, ui.start].forEach(id =>
+    $(id).addEventListener("keydown", e => { if (e.key === "Enter") $(ui.add).click(); }));
+}
+setupInv("milan"); setupInv("terka");
+
+/* ============ vlastné príjmy a výdavky ============ */
+const items = []; // {name, amount, kind, freq, year}
+const FREQ_M = { denne: 30.44, tyzdenne: 4.345, mesacne: 1, rocne: 1 / 12 };
+const FREQ_LBL = { denne: "denne", tyzdenne: "týždenne", mesacne: "mesačne", rocne: "ročne", jednorazovo: "jednorazovo" };
+
+function monthlyExtra(p, y, m, g) {
+  let extra = 0;
+  for (const it of p.items) {
+    const sign = it.kind === "prijem" ? 1 : -1;
+    if (it.freq === "jednorazovo") {
+      const mm = it.year === START_YEAR ? START_MONTH : 6; // v štartovom roku hneď, inak v júli
+      if (it.year === y && m === mm) extra += sign * it.amount;
+    } else {
+      extra += sign * it.amount * FREQ_M[it.freq] * g;
+    }
+  }
+  return extra;
+}
+
+function renderItems() {
+  const ul = $("itemList");
+  ul.replaceChildren();
+  $("itemEmpty").style.display = items.length ? "none" : "block";
+  items.forEach((it, i) => {
+    const li = document.createElement("li");
+    const dot = document.createElement("span");
+    dot.className = "swatch";
+    dot.style.background = it.kind === "prijem" ? "var(--good)" : "var(--critical)";
+    const nm = document.createElement("span"); nm.className = "inm"; nm.textContent = it.name;
+    const amt = document.createElement("span"); amt.className = "iamt";
+    amt.textContent = (it.kind === "prijem" ? "+" : "−") + fmt(it.amount);
+    const fr = document.createElement("span"); fr.className = "ifreq";
+    fr.textContent = it.freq === "jednorazovo" ? "jednorazovo · " + it.year : FREQ_LBL[it.freq];
+    const del = document.createElement("button"); del.className = "del"; del.type = "button";
+    del.textContent = "✕"; del.title = "Odstrániť";
+    del.addEventListener("click", () => { items.splice(i, 1); renderItems(); onEdit(); });
+    li.append(dot, nm, amt, fr, del);
+    ul.appendChild(li);
+  });
+}
+
+$("itFreq").addEventListener("change", () => {
+  $("itYear").style.display = $("itFreq").value === "jednorazovo" ? "" : "none";
+});
+$("itAdd").addEventListener("click", () => {
+  const name = $("itName").value.trim();
+  const amount = parseFloat($("itAmount").value);
+  if (!name || !(amount > 0)) { $(!name ? "itName" : "itAmount").focus(); return; }
+  items.push({
+    name, amount,
+    kind: $("itKind").value,
+    freq: $("itFreq").value,
+    year: Math.max(2026, Math.min(2070, Math.round(parseFloat($("itYear").value) || 2027))),
+  });
+  $("itName").value = ""; $("itAmount").value = "";
+  renderItems(); onEdit();
+});
+$("itName").addEventListener("keydown", e => { if (e.key === "Enter") $("itAdd").click(); });
+$("itAmount").addEventListener("keydown", e => { if (e.key === "Enter") $("itAdd").click(); });
+
+/* ============ simulation ============ */
+function simulate(p, withChildren) {
+  const children = [];
+  if (withChildren && p.childOn) {
+    if (p.childYear >= 2027) children.push(p.childYear);
+    if (p.child2Year >= 2027) children.push(p.child2Year);
+  }
+  children.sort((a, b) => a - b);
+
+  const MAT_MONTHS = 7; // ~28 týždňov
+  let mortgage = p.mBal, reserve = p.reserve;
+  let invJ = p.jointStart;
+  const mParts = p.milanInv.map(iv => ({ name: iv.name, monthly: iv.monthly, ret: iv.ret, bal: iv.start }));
+  const tParts = p.terkaInv.map(iv => ({ name: iv.name, monthly: iv.monthly, ret: iv.ret, bal: iv.start }));
+  const sumP = parts => parts.reduce((s, x) => s + x.bal, 0);
+  const snapP = parts => parts.map(x => ({ name: x.name, v: x.bal }));
+  let mortgagePaid = null, minReserve = reserve, deficitFrom = null;
+  let lostIncome = 0, pausedMonths = 0, pausedAmount = 0;
+  const yearly = [], monthly = [], mortSeries = [];
+
+  const endYear = p.horizon;
+  for (let y = START_YEAR; y <= endYear; y++) {
+    for (let m = (y === START_YEAR ? START_MONTH : 0); m < 12; m++) {
+      const t = (y - START_YEAR) * 12 + (m - START_MONTH);
+      const g = Math.pow(1 + p.growth / 100, t / 12);
+
+      /* Terkin príjem podľa fázy */
+      const base = p.terkaNet * g;
+      let terka = base, phase = "práca";
+      let afterAll = children.length > 0;
+      for (const cy of children) {
+        const bt = (cy - START_YEAR) * 12 + (6 - START_MONTH); // júl daného roka
+        const matEnd = bt + MAT_MONTHS, rodEnd = matEnd + p.rodMonths;
+        if (t >= bt && t < matEnd) { terka = base * p.matPct / 100; phase = "materská"; }
+        else if (t >= matEnd && t < rodEnd) { terka = 350000 / p.rodMonths; phase = "rodičovská"; }
+        if (t < rodEnd) afterAll = false;
+      }
+      if (phase === "práca" && afterAll) terka = base * p.returnPct / 100;
+      if (children.length) lostIncome += Math.max(0, base - terka);
+
+      /* náklady na deti — do 22 rokov veku */
+      let childCost = 0;
+      for (const cy of children) {
+        const bt = (cy - START_YEAR) * 12 + (6 - START_MONTH);
+        if (t >= bt && t < bt + 264) childCost += p.childCost * g;
+      }
+
+      /* hypotéka */
+      let pay = 0;
+      if (mortgage > 0) {
+        const interest = mortgage * p.mRate / 100 / 12;
+        pay = Math.min(p.mPay, mortgage + interest);
+        mortgage = mortgage + interest - pay;
+        if (mortgage < 1) { mortgage = 0; if (!mortgagePaid) mortgagePaid = y; }
+      }
+
+      /* cash flow spoločného účtu — DCA sa automaticky pozastaví, ak by rezerva klesla pod nulu */
+      const income = p.milanNet * g + terka + monthlyExtra(p, y, m, g);
+      const spending = pay + p.utilities * g + p.insHome * g + p.jointVar * g + p.pocketM * g + p.pocketT * g + childCost;
+      const avail = reserve * (1 + p.reserveRate / 100 / 12) + (income - spending);
+      const dcaJ = Math.min(p.jointDCA, Math.max(0, avail));
+      if (dcaJ < p.jointDCA - 0.01) { pausedMonths++; pausedAmount += p.jointDCA - dcaJ; }
+      const surplus = income - spending - dcaJ;
+      reserve = avail - dcaJ;
+      if (reserve < minReserve) minReserve = reserve;
+      if (reserve < 0 && deficitFrom === null) deficitFrom = y + (m + 1) / 12;
+
+      /* investície */
+      let sweep = 0;
+      if (p.sweepOn && reserve > p.reserveCap) { sweep = reserve - p.reserveCap; reserve = p.reserveCap; }
+      invJ = invJ * (1 + p.jointRet / 100 / 12) + dcaJ + sweep;
+      for (const iv of mParts) iv.bal = iv.bal * (1 + iv.ret / 100 / 12) + iv.monthly;
+      for (const iv of tParts) iv.bal = iv.bal * (1 + iv.ret / 100 / 12) + iv.monthly;
+
+      monthly.push({ y, m, surplus, phase });
+      if (m === 11) {
+        yearly.push({ y, joint: invJ, milan: sumP(mParts), terka: sumP(tParts),
+                      milanParts: snapP(mParts), terkaParts: snapP(tParts), reserve, mortgage });
+        mortSeries.push({ y, bal: mortgage });
+      }
+    }
+  }
+  const invM = sumP(mParts), invT = sumP(tParts);
+  if (!yearly.length || yearly[yearly.length - 1].y !== endYear) {
+    yearly.push({ y: endYear, joint: invJ, milan: invM, terka: invT,
+                  milanParts: snapP(mParts), terkaParts: snapP(tParts), reserve, mortgage });
+    mortSeries.push({ y: endYear, bal: mortgage });
+  }
+  const total = invJ + invM + invT + reserve;
+  const firstSurplus = monthly.length ? monthly[0].surplus : 0;
+  return { yearly, monthly, mortSeries, total, invJ, invM, invT, reserve,
+           mortgagePaid, minReserve, deficitFrom, firstSurplus, lostIncome, pausedMonths, pausedAmount };
+}
+
+/* ============ SVG utils ============ */
+const NS = "http://www.w3.org/2000/svg";
+function el(name, attrs, parent) {
+  const e = document.createElementNS(NS, name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function clearSvg(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
+function niceMax(v) {
+  if (v <= 0) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  for (const k of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (k * p >= v) return k * p;
+  return 10 * p;
+}
+function tipRow(tip, color, name, value) {
+  const r = document.createElement("div"); r.className = "r";
+  const lk = document.createElement("span"); lk.className = "lk"; lk.style.background = color;
+  const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = name;
+  const v = document.createElement("span"); v.className = "v"; v.textContent = value;
+  r.append(lk, nm, v); tip.appendChild(r);
+}
+function placeTip(tip, card, x, y) {
+  const cw = card.clientWidth;
+  tip.style.display = "block";
+  const tw = tip.offsetWidth;
+  tip.style.left = Math.max(6, Math.min(x + 14, cw - tw - 8)) + "px";
+  tip.style.top = (y - 10) + "px";
+}
+
+/* ============ chart: wealth stacked columns ============ */
+function drawWealth(res) {
+  const svg = $("wealthChart"), tip = $("wealthTip"), card = svg.closest(".card");
+  clearSvg(svg);
+  const W = svg.clientWidth || 800, H = 320;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const M = { l: 56, r: 12, t: 10, b: 26 };
+  const data = res.yearly;
+  const keys = [
+    { k: "joint",   name: "Spoločné investície", c: css("--s1") },
+    { k: "milan",   name: "Milan — osobné",      c: css("--s2") },
+    { k: "terka",   name: "Terka — osobné",      c: css("--s3") },
+    { k: "reserve", name: "Rezerva + hotovosť",  c: css("--s4") },
+  ];
+  const maxV = niceMax(Math.max(...data.map(d => Math.max(0, d.joint + d.milan + d.terka + d.reserve))));
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  const y = v => M.t + ih - (v / maxV) * ih;
+  const slot = iw / data.length;
+  const bw = Math.min(24, Math.max(6, slot - 6));
+  const GAP = 2;
+
+  /* grid + y ticks */
+  const ticks = 4;
+  for (let i = 0; i <= ticks; i++) {
+    const v = maxV * i / ticks, yy = y(v);
+    el("line", { x1: M.l, x2: W - M.r, y1: yy, y2: yy, stroke: i === 0 ? css("--baseline") : css("--grid"), "stroke-width": 1 }, svg);
+    const t = el("text", { x: M.l - 8, y: yy + 4, "text-anchor": "end" }, svg);
+    t.textContent = i === 0 ? "0" : fmtAxis(v);
+  }
+
+  const surface = css("--surface-1");
+  data.forEach((d, i) => {
+    const cx = M.l + slot * i + slot / 2;
+    let acc = 0;
+    const gEl = el("g", {}, svg);
+    keys.forEach((s, si) => {
+      const v = Math.max(0, d[s.k]);
+      if (v <= 0) { return; }
+      const y1 = y(acc + v), y0 = y(acc);
+      let h = y0 - y1;
+      const isTop = si === keys.length - 1 || keys.slice(si + 1).every(kk => d[kk.k] <= 0);
+      const gap = isTop ? 0 : GAP;
+      h = Math.max(0, h - gap);
+      if (h < 0.5) { acc += v; return; }
+      const r = isTop ? Math.min(4, h / 2, bw / 2) : 0;
+      const x0 = cx - bw / 2, yTop = y1;
+      let path;
+      if (r > 0) {
+        path = `M ${x0} ${yTop + h} L ${x0} ${yTop + r} Q ${x0} ${yTop} ${x0 + r} ${yTop} L ${x0 + bw - r} ${yTop} Q ${x0 + bw} ${yTop} ${x0 + bw} ${yTop + r} L ${x0 + bw} ${yTop + h} Z`;
+      } else {
+        path = `M ${x0} ${yTop + h} L ${x0} ${yTop} L ${x0 + bw} ${yTop} L ${x0 + bw} ${yTop + h} Z`;
+      }
+      el("path", { d: path, fill: s.c }, gEl);
+      acc += v;
+    });
+    /* x label — každý ~5. rok */
+    if (d.y % 5 === 0 || i === data.length - 1) {
+      const t = el("text", { x: cx, y: H - 8, "text-anchor": "middle" }, svg);
+      t.textContent = d.y;
+    }
+    /* hit target */
+    const hit = el("rect", { x: M.l + slot * i, y: M.t, width: slot, height: ih, fill: "transparent" }, svg);
+    hit.addEventListener("pointermove", ev => {
+      gEl.setAttribute("opacity", "0.85");
+      tip.replaceChildren();
+      const tt = document.createElement("div"); tt.className = "t";
+      tt.textContent = "Koniec roka " + d.y; tip.appendChild(tt);
+      [...keys].reverse().forEach(s => tipRow(tip, s.c, s.name, fmtM(Math.max(0, d[s.k]))));
+      tipRow(tip, css("--text-1"), "Spolu", fmtM(d.joint + d.milan + d.terka + Math.max(0, d.reserve)));
+      if (d.mortgage > 0) tipRow(tip, css("--s7"), "Hypotéka (dlh)", "−" + fmtM(d.mortgage));
+      const rect = card.getBoundingClientRect();
+      placeTip(tip, card, ev.clientX - rect.left, ev.clientY - rect.top);
+    });
+    hit.addEventListener("pointerleave", () => { gEl.removeAttribute("opacity"); tip.style.display = "none"; });
+  });
+
+  /* table view */
+  const tbl = $("wealthTable");
+  tbl.replaceChildren();
+  const thead = document.createElement("tr");
+  ["Rok", "Spoločné", "Milan", "Terka", "Rezerva", "Spolu", "Hypotéka"].forEach(h => {
+    const th = document.createElement("th"); th.textContent = h; thead.appendChild(th);
+  });
+  tbl.appendChild(thead);
+  data.forEach(d => {
+    const tr = document.createElement("tr");
+    [d.y, fmt(d.joint), fmt(d.milan), fmt(d.terka), fmt(d.reserve),
+     fmt(d.joint + d.milan + d.terka + d.reserve), d.mortgage > 0 ? "−" + fmt(d.mortgage) : "splatená"]
+      .forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+    tbl.appendChild(tr);
+  });
+}
+
+/* ============ chart: monthly surplus line ============ */
+function drawSurplus(res) {
+  const svg = $("surplusChart"), tip = $("surplusTip"), card = svg.closest(".card");
+  clearSvg(svg);
+  const W = svg.clientWidth || 800, H = 220;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const M = { l: 56, r: 12, t: 12, b: 26 };
+  const data = res.monthly;
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  let lo = Math.min(0, ...data.map(d => d.surplus));
+  let hi = Math.max(0, ...data.map(d => d.surplus));
+  hi = niceMax(hi); lo = lo < 0 ? -niceMax(-lo) : 0;
+  const y = v => M.t + ih * (1 - (v - lo) / (hi - lo));
+  const x = i => M.l + iw * i / Math.max(1, data.length - 1);
+
+  const yTicks = (Math.abs(lo) <= hi / 2 ? [lo, 0, hi / 2, hi] : [lo, lo / 2, 0, hi / 2, hi])
+    .filter((v, i, a) => a.indexOf(v) === i);
+  yTicks.forEach(v => {
+    const yy = y(v);
+    el("line", { x1: M.l, x2: W - M.r, y1: yy, y2: yy, stroke: v === 0 ? css("--baseline") : css("--grid"), "stroke-width": 1 }, svg);
+    const t = el("text", { x: M.l - 8, y: yy + 4, "text-anchor": "end" }, svg);
+    t.textContent = (v / 1000).toLocaleString("sk-SK") + " tis.";
+  });
+  /* x labels: každých 5 rokov */
+  data.forEach((d, i) => {
+    if (d.m === 0 && d.y % 5 === 0) {
+      const t = el("text", { x: x(i), y: H - 8, "text-anchor": "middle" }, svg);
+      t.textContent = d.y;
+    }
+  });
+
+  const blue = css("--s1");
+  let dPath = "", dArea = "";
+  data.forEach((d, i) => {
+    const px = x(i), py = y(d.surplus);
+    dPath += (i ? " L " : "M ") + px.toFixed(1) + " " + py.toFixed(1);
+  });
+  dArea = dPath + ` L ${x(data.length - 1).toFixed(1)} ${y(0)} L ${M.l} ${y(0)} Z`;
+  el("path", { d: dArea, fill: blue, opacity: 0.1 }, svg);
+  el("path", { d: dPath, fill: "none", stroke: blue, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+
+  /* crosshair + tooltip */
+  const cross = el("line", { y1: M.t, y2: M.t + ih, stroke: css("--baseline"), "stroke-width": 1, visibility: "hidden" }, svg);
+  const dot = el("circle", { r: 4.5, fill: blue, stroke: css("--surface-1"), "stroke-width": 2, visibility: "hidden" }, svg);
+  const MON = ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"];
+  const hit = el("rect", { x: M.l, y: M.t, width: iw, height: ih, fill: "transparent" }, svg);
+  hit.addEventListener("pointermove", ev => {
+    const rect = svg.getBoundingClientRect();
+    const rel = (ev.clientX - rect.left) * (W / rect.width);
+    const i = Math.max(0, Math.min(data.length - 1, Math.round((rel - M.l) / iw * (data.length - 1))));
+    const d = data[i], px = x(i), py = y(d.surplus);
+    cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.setAttribute("visibility", "visible");
+    dot.setAttribute("cx", px); dot.setAttribute("cy", py); dot.setAttribute("visibility", "visible");
+    tip.replaceChildren();
+    const tt = document.createElement("div"); tt.className = "t";
+    tt.textContent = MON[d.m] + " " + d.y + (d.phase !== "práca" ? " · " + d.phase : "");
+    tip.appendChild(tt);
+    tipRow(tip, blue, "Prebytok", fmt(d.surplus));
+    const crect = card.getBoundingClientRect();
+    placeTip(tip, card, ev.clientX - crect.left, ev.clientY - crect.top);
+  });
+  hit.addEventListener("pointerleave", () => {
+    cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden");
+    tip.style.display = "none";
+  });
+}
+
+/* ============ chart: mortgage balance ============ */
+function drawMortgage(res) {
+  const svg = $("mortgageChart"), tip = $("mortgageTip"), card = svg.closest(".card");
+  clearSvg(svg);
+  const W = svg.clientWidth || 800, H = 200;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const M = { l: 56, r: 110, t: 12, b: 26 };
+  const data = res.mortSeries;
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  const maxV = niceMax(Math.max(1, ...data.map(d => d.bal), readParams().mBal));
+  const y = v => M.t + ih * (1 - v / maxV);
+  const x = i => M.l + iw * i / Math.max(1, data.length - 1);
+  const violet = css("--s7");
+
+  for (let i = 0; i <= 4; i++) {
+    const v = maxV * i / 4, yy = y(v);
+    el("line", { x1: M.l, x2: W - M.r, y1: yy, y2: yy, stroke: i === 0 ? css("--baseline") : css("--grid"), "stroke-width": 1 }, svg);
+    const t = el("text", { x: M.l - 8, y: yy + 4, "text-anchor": "end" }, svg);
+    t.textContent = i === 0 ? "0" : (v / 1e6).toLocaleString("sk-SK", { maximumFractionDigits: 1 }) + " mil.";
+  }
+  data.forEach((d, i) => {
+    if (d.y % 5 === 0 || i === data.length - 1) {
+      const t = el("text", { x: x(i), y: H - 8, "text-anchor": "middle" }, svg);
+      t.textContent = d.y;
+    }
+  });
+
+  let dPath = "";
+  data.forEach((d, i) => { dPath += (i ? " L " : "M ") + x(i).toFixed(1) + " " + y(d.bal).toFixed(1); });
+  el("path", { d: dPath, fill: "none", stroke: violet, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+
+  /* end label */
+  const lastIdx = res.mortgagePaid ? data.findIndex(d => d.bal <= 0) : data.length - 1;
+  const li = lastIdx >= 0 ? lastIdx : data.length - 1;
+  el("circle", { cx: x(li), cy: y(data[li].bal), r: 4.5, fill: violet, stroke: css("--surface-1"), "stroke-width": 2 }, svg);
+  const lbl = el("text", { x: x(li) + 8, y: y(data[li].bal) - 9, class: "endlabel" }, svg);
+  lbl.textContent = res.mortgagePaid ? "splatená " + res.mortgagePaid : fmtM(data[li].bal);
+
+  const cross = el("line", { y1: M.t, y2: M.t + ih, stroke: css("--baseline"), "stroke-width": 1, visibility: "hidden" }, svg);
+  const hit = el("rect", { x: M.l, y: M.t, width: iw, height: ih, fill: "transparent" }, svg);
+  hit.addEventListener("pointermove", ev => {
+    const rect = svg.getBoundingClientRect();
+    const rel = (ev.clientX - rect.left) * (W / rect.width);
+    const i = Math.max(0, Math.min(data.length - 1, Math.round((rel - M.l) / iw * (data.length - 1))));
+    const d = data[i], px = x(i);
+    cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.setAttribute("visibility", "visible");
+    tip.replaceChildren();
+    const tt = document.createElement("div"); tt.className = "t"; tt.textContent = "Koniec roka " + d.y; tip.appendChild(tt);
+    tipRow(tip, violet, "Zostatok", d.bal > 0 ? fmt(d.bal) : "splatená");
+    const crect = card.getBoundingClientRect();
+    placeTip(tip, card, ev.clientX - crect.left, ev.clientY - crect.top);
+  });
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); tip.style.display = "none"; });
+}
+
+/* ============ chart: osobné investície (mini) ============ */
+function drawPerson(res, key, svgId, tipId, colorVar, name) {
+  const svg = $(svgId), tip = $(tipId), card = svg.closest(".card");
+  clearSvg(svg);
+  const W = svg.clientWidth || 500, H = 170;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const M = { l: 52, r: 14, t: 12, b: 24 };
+  const data = res.yearly.map(d => ({ y: d.y, v: d[key], parts: d[key + "Parts"] || [] }));
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  const maxV = niceMax(Math.max(1, ...data.map(d => d.v)));
+  const y = v => M.t + ih * (1 - v / maxV);
+  const x = i => M.l + iw * i / Math.max(1, data.length - 1);
+  const color = css(colorVar);
+
+  for (let i = 0; i <= 2; i++) {
+    const v = maxV * i / 2, yy = y(v);
+    el("line", { x1: M.l, x2: W - M.r, y1: yy, y2: yy, stroke: i === 0 ? css("--baseline") : css("--grid"), "stroke-width": 1 }, svg);
+    const t = el("text", { x: M.l - 7, y: yy + 4, "text-anchor": "end" }, svg);
+    t.textContent = i === 0 ? "0" : (v / 1e6).toLocaleString("sk-SK", { maximumFractionDigits: 1 }) + " mil.";
+  }
+  data.forEach((d, i) => {
+    if (d.y % 10 === 0 || i === data.length - 1) {
+      const t = el("text", { x: x(i), y: H - 7, "text-anchor": "middle" }, svg);
+      t.textContent = d.y;
+    }
+  });
+
+  let dPath = "";
+  data.forEach((d, i) => { dPath += (i ? " L " : "M ") + x(i).toFixed(1) + " " + y(d.v).toFixed(1); });
+  el("path", { d: dPath + ` L ${x(data.length - 1).toFixed(1)} ${y(0)} L ${M.l} ${y(0)} Z`, fill: color, opacity: 0.1 }, svg);
+  el("path", { d: dPath, fill: "none", stroke: color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+  el("circle", { cx: x(data.length - 1), cy: y(data[data.length - 1].v), r: 4.5, fill: color, stroke: css("--surface-1"), "stroke-width": 2 }, svg);
+
+  const cross = el("line", { y1: M.t, y2: M.t + ih, stroke: css("--baseline"), "stroke-width": 1, visibility: "hidden" }, svg);
+  const dot = el("circle", { r: 4.5, fill: color, stroke: css("--surface-1"), "stroke-width": 2, visibility: "hidden" }, svg);
+  const hit = el("rect", { x: M.l, y: M.t, width: iw, height: ih, fill: "transparent" }, svg);
+  hit.addEventListener("pointermove", ev => {
+    const rect = svg.getBoundingClientRect();
+    const rel = (ev.clientX - rect.left) * (W / rect.width);
+    const i = Math.max(0, Math.min(data.length - 1, Math.round((rel - M.l) / iw * (data.length - 1))));
+    const d = data[i], px = x(i), py = y(d.v);
+    cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.setAttribute("visibility", "visible");
+    dot.setAttribute("cx", px); dot.setAttribute("cy", py); dot.setAttribute("visibility", "visible");
+    tip.replaceChildren();
+    const tt = document.createElement("div"); tt.className = "t"; tt.textContent = "Koniec roka " + d.y; tip.appendChild(tt);
+    if (d.parts.length > 1) d.parts.forEach(pt => tipRow(tip, css("--muted"), pt.name, fmt(pt.v)));
+    tipRow(tip, color, d.parts.length > 1 ? "Spolu" : name, fmt(d.v));
+    const crect = card.getBoundingClientRect();
+    placeTip(tip, card, ev.clientX - crect.left, ev.clientY - crect.top);
+  });
+  hit.addEventListener("pointerleave", () => {
+    cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden");
+    tip.style.display = "none";
+  });
+}
+
+/* ============ bankové toky ============ */
+function renderBankFlows(p) {
+  const flowRow = (box, name, v, opts = {}) => {
+    const r = document.createElement("div"); r.className = "flowrow" + (opts.total ? " total" : "");
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = name;
+    const amt = document.createElement("span"); amt.className = "amt";
+    amt.textContent = (v < 0 ? "−" : opts.signed && v > 0 ? "+" : "") + fmt(Math.abs(v));
+    if (opts.color) amt.style.color = opts.color;
+    r.append(nm, amt); box.appendChild(r);
+  };
+  /* KB */
+  const kb = $("kbRows"); kb.replaceChildren();
+  const kbOut = (p.mBal > 0 ? p.mPay : 0) + p.insHome + p.utilities;
+  flowRow(kb, "− Hypotéka", p.mBal > 0 ? p.mPay : 0);
+  flowRow(kb, "− Poistka na byt", p.insHome);
+  flowRow(kb, "− Energie + internet + SVJ", p.utilities);
+  flowRow(kb, "Platby z KB spolu", kbOut, { total: true });
+  const diff = p.kbTransfer - kbOut;
+  flowRow(kb, diff >= 0 ? "Vankúš na KB / mes." : "Prevod nestačí!", diff,
+    { total: true, signed: true, color: css(diff >= 0 ? "--good" : "--critical") });
+
+  /* Air Bank */
+  const ab = $("abRows"); ab.replaceChildren();
+  let extraInc = 0, extraExp = 0;
+  for (const it of p.items) if (it.freq !== "jednorazovo") {
+    const v = it.amount * FREQ_M[it.freq];
+    if (it.kind === "prijem") extraInc += v; else extraExp += v;
+  }
+  const income = p.milanNet + p.terkaNet + extraInc;
+  flowRow(ab, "+ Výplaty" + (extraInc > 0 ? " a ďalšie príjmy" : ""), income, { signed: true });
+  flowRow(ab, "− Prevod na KB", p.kbTransfer);
+  flowRow(ab, "− Spoločné variabilné (potraviny…)", p.jointVar);
+  flowRow(ab, "− Vreckové Milan + Terka", p.pocketM + p.pocketT);
+  if (extraExp > 0) flowRow(ab, "− Ďalšie pravidelné výdavky", extraExp);
+  flowRow(ab, "− Spoločné investície (DCA)", p.jointDCA);
+  const abLeft = income - p.kbTransfer - p.jointVar - p.pocketM - p.pocketT - extraExp - p.jointDCA;
+  flowRow(ab, abLeft >= 0 ? "Ostáva do obálok / rezervy" : "Deficit na Air Bank", abLeft,
+    { total: true, signed: true, color: css(abLeft >= 0 ? "--good" : "--critical") });
+}
+
+/* ============ cash flow sumár ============ */
+function renderCashflow(p) {
+  const mInvM = p.milanInv.reduce((s, x) => s + x.monthly, 0);
+  const tInvM = p.terkaInv.reduce((s, x) => s + x.monthly, 0);
+  let extraInc = 0, extraExp = 0;
+  for (const it of p.items) if (it.freq !== "jednorazovo") {
+    const v = it.amount * FREQ_M[it.freq];
+    if (it.kind === "prijem") extraInc += v; else extraExp += v;
+  }
+  const income = p.milanNet + p.terkaNet + extraInc;
+  const pct = v => income > 0 ? (v / income * 100).toLocaleString("sk-SK", { maximumFractionDigits: 1 }) + " %" : "—";
+
+  const spend = [
+    ["Hypotéka", p.mBal > 0 ? p.mPay : 0],
+    ["Energie + internet + SVJ", p.utilities],
+    ["Poistka na byt", p.insHome],
+    ["Spoločné variabilné (potraviny…)", p.jointVar],
+    ["Vreckové Milan", p.pocketM],
+    ["Vreckové Terka", p.pocketT],
+  ];
+  if (extraExp > 0) spend.push(["Ďalšie pravidelné výdavky", extraExp]);
+  const invest = [
+    ["Spoločné investície (DCA)", p.jointDCA],
+  ];
+  const spendSum = spend.reduce((s, r) => s + r[1], 0);
+  const investSum = invest.reduce((s, r) => s + r[1], 0);
+  const leftover = income - spendSum - investSum;
+
+  const GROUPS = [
+    { lbl: "Spotreba", v: spendSum, c: css("--muted") },
+    { lbl: "Investície", v: investSum, c: css("--s1") },
+    { lbl: "Rezerva (ostatok)", v: Math.max(0, leftover), c: css("--s4") },
+  ];
+
+  /* stacked bar + legenda */
+  const bar = $("cfBar"); bar.replaceChildren();
+  GROUPS.forEach(gr => {
+    if (gr.v <= 0) return;
+    const seg = document.createElement("div"); seg.className = "seg";
+    seg.style.width = (gr.v / income * 100) + "%";
+    seg.style.background = gr.c;
+    seg.title = gr.lbl + ": " + fmt(gr.v);
+    bar.appendChild(seg);
+  });
+  const leg = $("cfLegend"); leg.replaceChildren();
+  GROUPS.forEach(gr => {
+    const k = document.createElement("span"); k.className = "k";
+    const sw = document.createElement("span"); sw.className = "swatch"; sw.style.background = gr.c;
+    sw.style.marginRight = "6px"; sw.style.verticalAlign = "-1px";
+    k.appendChild(sw);
+    k.append(gr.lbl + " " + fmt(gr.v) + " (" + pct(gr.v) + ")");
+    leg.appendChild(k);
+  });
+
+  /* riadky */
+  const box = $("cfRows"); box.replaceChildren();
+  const sec = t => { const d = document.createElement("div"); d.className = "cfsec"; d.textContent = t; box.appendChild(d); };
+  const row = (name, v, color, total) => {
+    const r = document.createElement("div"); r.className = "cfrow" + (total ? " total" : "");
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = name;
+    const b = document.createElement("div"); b.className = "bar";
+    if (color && income > 0) {
+      const i = document.createElement("i");
+      i.style.width = Math.min(100, Math.abs(v) / income * 100) + "%";
+      i.style.background = color;
+      b.appendChild(i);
+    }
+    const amt = document.createElement("span"); amt.className = "amt";
+    amt.textContent = (v < 0 ? "−" : "") + fmt(Math.abs(v));
+    if (v < 0) amt.style.color = css("--critical");
+    const pc = document.createElement("span"); pc.className = "pct"; pc.textContent = pct(Math.abs(v));
+    r.append(nm, b, amt, pc);
+    box.appendChild(r);
+  };
+
+  sec("Príjmy");
+  row("Milan — na účet", p.milanNet, null);
+  row("Terka — na účet", p.terkaNet, null);
+  if (extraInc > 0) row("Ďalšie pravidelné príjmy", extraInc, null);
+  row("Príjem domácnosti spolu", income, null, true);
+
+  sec("Spotreba");
+  spend.forEach(([n, v]) => row("− " + n, v, css("--muted")));
+  row("Spotreba spolu", spendSum, css("--muted"), true);
+
+  sec("Spoločné investície");
+  invest.forEach(([n, v]) => row("− " + n, v, css("--s1")));
+  row("Investície spolu", investSum, css("--s1"), true);
+  const noteRow = document.createElement("div"); noteRow.className = "cfrow";
+  const noteNm = document.createElement("span"); noteNm.className = "nm";
+  noteNm.style.gridColumn = "1 / -1"; noteNm.style.fontSize = "12px"; noteNm.style.color = "var(--muted)";
+  noteNm.textContent = "Osobné investície (Milan " + Math.round(mInvM).toLocaleString("sk-SK") + " Kč, Terka " +
+    Math.round(tInvM).toLocaleString("sk-SK") + " Kč), subscriptions a pod. idú z vreckového — sú už vo Vreckovom vyššie.";
+  noteRow.appendChild(noteNm); box.appendChild(noteRow);
+
+  sec("Zvyšok");
+  row(leftover >= 0 ? "= Ostáva do rezervy" : "= Deficit (čerpá sa rezerva)", leftover, css(leftover >= 0 ? "--s4" : "--critical"), true);
+}
+
+/* ============ odporúčací systém ============ */
+const openRecos = new Set();
+const rUp = (v, step) => Math.ceil(v / step) * step;
+
+function buildRecos(p, res) {
+  const recos = [];
+  const mInvM = p.milanInv.reduce((s, x) => s + x.monthly, 0);
+  const tInvM = p.terkaInv.reduce((s, x) => s + x.monthly, 0);
+  const fixedMonthly = (p.mBal > 0 ? p.mPay : 0) + p.utilities + p.insHome + p.jointVar;
+  const monthsGap = 7 + p.rodMonths;
+
+  /* 1 — deficit už dnes */
+  if (res.firstSurplus < 0) {
+    const cut = rUp(-res.firstSurplus, 500);
+    recos.push({
+      id: "deficit-today", sev: "critical",
+      title: "Míňate viac, než zarábate — už dnes je mesačný deficit " + fmt(-res.firstSurplus),
+      detail: "Výdavky + spoločné DCA prevyšujú príjem domácnosti, takže rezerva sa čerpá od prvého mesiaca. Hypotéku, energie ani poistku znížiť neviete — páky sú DCA, variabilné výdavky a vreckové.",
+      fixes: [
+        { inputId: "jointDCA", label: "Znížiť spoločné DCA", from: p.jointDCA, to: Math.max(0, p.jointDCA - cut) },
+        { inputId: "jointVar", label: "Alebo znížiť variabilné výdavky", from: p.jointVar, to: Math.max(0, p.jointVar - cut) },
+        { inputId: "pocketM", label: "Alebo siahnuť na vreckové", from: p.pocketM, to: null },
+      ],
+    });
+  }
+
+  /* 2/3/4 — rodina rezervových problémov (zobrazí sa len najvážnejší).
+     Každý návrh sa OVERUJE simuláciou: ponúkne sa len zmena, ktorá problém reálne odstráni,
+     a jej hodnota sa nájde binárnym hľadaním. */
+  const minTarget = 3 * fixedMonthly;
+  const passes = (mod, critFn) => critFn(simulate({ ...p, ...mod }, true));
+  const minCap = critFn => {
+    if (!passes({ reserveCap: 1e12 }, critFn)) return null;   // strop problém nevyrieši (nie je viazaný)
+    let lo = p.reserveCap, hi = Math.max(p.reserveCap * 2, 2000000);
+    let guard = 0;
+    while (!passes({ reserveCap: hi }, critFn) && guard++ < 8) hi *= 2;
+    for (let i = 0; i < 22; i++) { const m = (lo + hi) / 2; if (passes({ reserveCap: m }, critFn)) hi = m; else lo = m; }
+    return rUp(hi, 50000);
+  };
+  const maxVal = (key, critFn, step) => {   // najvyššia hodnota vstupu, pri ktorej problém zmizne
+    if (!passes({ [key]: 0 }, critFn)) return null;
+    let lo = 0, hi = p[key];
+    for (let i = 0; i < 22; i++) { const m = (lo + hi) / 2; if (passes({ [key]: m }, critFn)) lo = m; else hi = m; }
+    let v = Math.floor(lo / step) * step;
+    while (v > 0 && !passes({ [key]: v }, critFn)) v -= step;
+    return Math.max(0, v);
+  };
+  const reserveFixes = critFn => {
+    const fixes = [];
+    const cap = minCap(critFn);
+    if (cap !== null && cap > p.reserveCap) fixes.push({ inputId: "reserveCap", label: "Zvýšiť strop rezervy (sweep nechá viac v hotovosti)", from: p.reserveCap, to: cap });
+    const dca = maxVal("jointDCA", critFn, 500);
+    if (dca !== null && dca < p.jointDCA) fixes.push({ inputId: "jointDCA", label: (fixes.length ? "Alebo znížiť" : "Znížiť") + " spoločné DCA", from: p.jointDCA, to: dca });
+    if (!fixes.length) {
+      const jv = maxVal("jointVar", critFn, 500);
+      if (jv !== null && jv < p.jointVar) fixes.push({ inputId: "jointVar", label: "Znížiť variabilné výdavky", from: p.jointVar, to: jv });
+      for (const rm of [18, 12]) if (rm < p.rodMonths && passes({ rodMonths: rm }, critFn)) {
+        fixes.push({ inputId: "rodMonths", label: "Skrátiť čerpanie rodičovského (skorší návrat Terky do práce)", from: p.rodMonths, to: rm });
+        break;
+      }
+    }
+    if (!fixes.length) fixes.push({ inputId: "jointVar", label: "Žiadna jednotlivá páka nestačí — treba kombinovať nižšie výdavky, nižšie DCA a neskoršie dieťa", from: null, to: null });
+    return fixes;
+  };
+  const verifiedNote = " Návrhy nižšie sú prepočítané simuláciou — každý sám o sebe problém odstráni.";
+
+  if (res.deficitFrom) {
+    recos.push({
+      id: "reserve-deficit", sev: "critical",
+      title: "Rezerva v projekcii klesne pod nulu (okolo " + Math.floor(res.deficitFrom) + ")",
+      detail: "Počas materskej a rodičovskej výdavky prevýšia príjem natoľko, že spoločná rezerva sa minie — aj po automatickej pauze DCA." + verifiedNote,
+      fixes: reserveFixes(r => r.minReserve >= 0),
+    });
+  } else if (res.pausedMonths > 0) {
+    recos.push({
+      id: "dca-paused", sev: "warning",
+      title: "Počas rodičovskej sa spoločné DCA pozastaví na " + res.pausedMonths + " mesiacov",
+      detail: "Rezerva nestačí na to, aby investovanie bežalo bez prerušenia — model musel vynechať vklady za " + fmt(res.pausedAmount) + "." + verifiedNote,
+      fixes: reserveFixes(r => r.pausedMonths === 0),
+    });
+  } else if (res.minReserve < minTarget) {
+    recos.push({
+      id: "reserve-low", sev: "warning",
+      title: "Rezerva v najhoršom momente klesne na " + fmt(Math.max(0, res.minReserve)) + " — pod 3 mesiace fixných výdavkov",
+      detail: "Odporúčané minimum je ~3× fixné mesačné výdavky (hypotéka + energie + poistka + potraviny = " + fmt(fixedMonthly) + "/mes., teda " + fmt(minTarget) + "). Pod túto úroveň by rezerva nemala klesnúť ani počas rodičovskej." + verifiedNote,
+      fixes: reserveFixes(r => r.minReserve >= minTarget),
+    });
+  }
+
+  /* 5 — nízky úrok na rezerve */
+  if (p.reserveRate < 3.5 && p.reserve > 100000) {
+    const gain = Math.round(p.reserve * (4 - p.reserveRate) / 100);
+    recos.push({
+      id: "low-rate", sev: "warning",
+      title: "Rezerva zarába len " + p.reserveRate.toLocaleString("sk-SK") + " % — prichádzate o ~" + fmt(gain) + " ročne",
+      detail: "Sporiace účty aktuálne ponúkajú ~4 % p.a. do 500 tis. Kč (Raiffeisenbank 4,2 %, mBank 4,01 %). Presun rezervy je bez rizika a bez straty likvidity — jediná námaha je založiť účet.",
+      fixes: [
+        { inputId: "reserveRate", label: "Po presune nastaviť úrok na", from: p.reserveRate, to: 4, pct: true },
+      ],
+    });
+  }
+
+  /* 6 — prebytok sa neinvestuje */
+  if (!p.sweepOn && res.firstSurplus > 5000) {
+    recos.push({
+      id: "idle-surplus", sev: "warning",
+      title: "Mesačne ostáva " + fmt(res.firstSurplus) + ", ale prebytok sa len hromadí na účte",
+      detail: "Sweep pravidlo je vypnuté, takže všetko nad výdavky ostáva v hotovosti pri nízkom úroku namiesto investícií. Na dlhom horizonte je to najdrahšia forma sporenia.",
+      fixes: [
+        { inputId: "sweepOn", label: "Zapnúť automatické investovanie prebytku", from: null, to: true },
+        { inputId: "jointDCA", label: "Alebo zdvihnúť spoločné DCA", from: p.jointDCA, to: p.jointDCA + Math.floor(res.firstSurplus * 0.8 / 1000) * 1000 },
+      ],
+    });
+  }
+
+  /* 7 — prevod na KB */
+  const kbOut = (p.mBal > 0 ? p.mPay : 0) + p.insHome + p.utilities;
+  if (p.kbTransfer < kbOut) {
+    recos.push({
+      id: "kb-short", sev: "critical",
+      title: "Prevod na KB (" + fmt(p.kbTransfer) + ") nepokryje platby " + fmt(kbOut),
+      detail: "Z KB sa platí hypotéka, poistka na byt a energie — ak prevod nestačí, platby zlyhajú. Toto treba opraviť ako prvé.",
+      fixes: [
+        { inputId: "kbTransfer", label: "Zvýšiť prevod na KB", from: p.kbTransfer, to: rUp(kbOut + 300, 500) },
+      ],
+    });
+  } else if (p.kbTransfer - kbOut > 3000) {
+    recos.push({
+      id: "kb-idle", sev: "info",
+      title: "Na KB sa mesačne hromadí " + fmt(p.kbTransfer - kbOut) + " navyše",
+      detail: "KB účet je izolovaný a neúročený — vankúš nad platby tam neefektívne stojí. Malý vankúš (~500 Kč) je fajn na výkyvy energií, zvyšok nechajte na Air Bank.",
+      fixes: [
+        { inputId: "kbTransfer", label: "Znížiť prevod na KB", from: p.kbTransfer, to: rUp(kbOut + 300, 100) },
+      ],
+    });
+  }
+
+  /* 8 — zbytočne vysoký strop bez detí */
+  const allMonthly = fixedMonthly + p.pocketM + p.pocketT;
+  if (p.sweepOn && !p.childOn && p.reserveCap > 8 * allMonthly) {
+    recos.push({
+      id: "cap-high", sev: "info",
+      title: "Strop rezervy je " + (p.reserveCap / allMonthly).toFixed(0) + " mesiacov výdavkov — bez detí zbytočne veľa",
+      detail: "Bez plánovaného dieťaťa stačí rezerva ~6 mesiacov celkových výdavkov. Všetko nad to môže pracovať v investíciách.",
+      fixes: [
+        { inputId: "reserveCap", label: "Znížiť strop rezervy", from: p.reserveCap, to: rUp(6 * allMonthly, 50000) },
+      ],
+    });
+  }
+
+  /* 9 — nereálne výnosy */
+  const highPers = [...p.milanInv, ...p.terkaInv].filter(iv => iv.ret > 10);
+  if (p.jointRet > 9 || highPers.length) {
+    recos.push({
+      id: "high-return", sev: "info",
+      title: "Výnosové predpoklady sú optimistické" + (highPers.length ? " (" + highPers.map(x => x.name + " " + x.ret + " %").join(", ") + ")" : " (" + p.jointRet + " %)"),
+      detail: "Dlhodobý nominálny výnos svetových akcií je ~7–9 %, po inflácii ~7 % reálne. Plán postavený na 10 %+ vyzerá krajšie, ale podceníte, koľko treba odkladať. Konzervatívnejší predpoklad = príjemné prekvapenia namiesto nepríjemných.",
+      fixes: p.jointRet > 9
+        ? [{ inputId: "jointRet", label: "Nastaviť výnos spoločných investícií na", from: p.jointRet, to: 7, pct: true }]
+        : [],
+    });
+  }
+
+  return recos;
+}
+
+function renderRecos(recos) {
+  const box = $("recoBox");
+  box.replaceChildren();
+  document.querySelectorAll(".hl").forEach(el => el.classList.remove("hl"));
+  if (!recos.length) {
+    const ok = document.createElement("div"); ok.className = "allok";
+    ok.textContent = "✓ Financie vyzerajú optimalizované — žiadne odporúčania.";
+    box.appendChild(ok);
+    return;
+  }
+  const ICON = { critical: "⚠", warning: "!", info: "ℹ" };
+  const ORDER = { critical: 0, warning: 1, info: 2 };
+  recos.sort((a, b) => ORDER[a.sev] - ORDER[b.sev]);
+  recos.forEach(rc => {
+    const wrap = document.createElement("div");
+    wrap.className = "reco " + rc.sev + (openRecos.has(rc.id) ? " open" : "");
+    const head = document.createElement("button"); head.className = "rhead"; head.type = "button";
+    const ic = document.createElement("span"); ic.className = "ric"; ic.textContent = ICON[rc.sev];
+    const tt = document.createElement("span"); tt.textContent = rc.title;
+    const ch = document.createElement("span"); ch.className = "chev"; ch.textContent = "›";
+    head.append(ic, tt, ch);
+    head.addEventListener("click", () => {
+      if (openRecos.has(rc.id)) openRecos.delete(rc.id); else openRecos.add(rc.id);
+      renderRecos(recos);
+    });
+    const body = document.createElement("div"); body.className = "rbody";
+    const pEl = document.createElement("p"); pEl.textContent = rc.detail; body.appendChild(pEl);
+    rc.fixes.forEach(fx => {
+      const fr = document.createElement("div"); fr.className = "fixrow";
+      const txt = document.createElement("span"); txt.className = "fx";
+      const bEl = document.createElement("b");
+      if (fx.to === true) { txt.append(fx.label); }
+      else if (fx.to === null) { txt.append(fx.label + (fx.from !== null ? " — podľa vlastného uváženia" : "")); }
+      else {
+        const fmtV = v => fx.pct ? v.toLocaleString("sk-SK") + " %" : fmt(v);
+        bEl.textContent = fmtV(fx.to);
+        txt.append(fx.label + ": " + (fx.from != null ? fmtV(fx.from) + " → " : ""));
+        txt.appendChild(bEl);
+      }
+      fr.appendChild(txt);
+      if (fx.to !== null) {
+        const btn = document.createElement("button"); btn.type = "button"; btn.textContent = "Použiť";
+        btn.addEventListener("click", () => {
+          const el = $(fx.inputId);
+          if (el.type === "checkbox") el.checked = fx.to === true; else el.value = fx.to;
+          onEdit();
+        });
+        fr.appendChild(btn);
+      }
+      const go = document.createElement("a"); go.textContent = "prejsť na pole →";
+      go.addEventListener("click", () => {
+        const el = $(fx.inputId);
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("hl");
+      });
+      fr.appendChild(go);
+      body.appendChild(fr);
+    });
+    wrap.append(head, body);
+    box.appendChild(wrap);
+    /* zvýrazni polia otvorených odporúčaní */
+    if (openRecos.has(rc.id)) rc.fixes.forEach(fx => { const el = $(fx.inputId); if (el) el.classList.add("hl"); });
+  });
+}
+
+/* ============ main ============ */
+function recompute() {
+  const p = readParams();
+  const res = simulate(p, true);
+
+  renderRecos(buildRecos(p, res));
+
+  /* osobné dlaždice */
+  $("milanTileLbl").textContent = "Osobný majetok v roku " + p.horizon;
+  $("milanTileVal").textContent = fmtM(res.invM);
+  $("terkaTileLbl").textContent = "Osobný majetok v roku " + p.horizon;
+  $("terkaTileVal").textContent = fmtM(res.invT);
+
+  renderCashflow(p);
+  renderBankFlows(p);
+  drawWealth(res);
+  drawSurplus(res);
+  drawMortgage(res);
+  drawPerson(res, "milan", "milanChart", "milanTip", "--s2", "Milan — osobné");
+  drawPerson(res, "terka", "terkaChart", "terkaTip", "--s3", "Terka — osobné");
+}
+
+/* ============ ukladanie stavu ============
+   Zdieľaný stav žije v data.json v repozitári — načítava sa pri každom otvorení,
+   takže rovnaké hodnoty vidia všetky zariadenia. Tlačidlo „Uložiť pre všetkých"
+   commitne data.json cez GitHub API. Token je len v localStorage daného prehliadača.
+*/
+const REPO = { owner: "MilanKubackaM", repo: "familyOverview", branch: "main", path: "data.json" };
+const TOKEN_KEY = "familyOverview.token";
+const DRAFT_KEY = "familyOverview.draft";
+let loading = false, dirty = false, sharedSha = null, sharedSavedAt = null;
+
+const getToken = () => { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; } };
+function setStatus(msg, cls) {
+  const el = $("saveInfo");
+  el.textContent = msg;
+  el.className = "saveinfo" + (cls ? " " + cls : "");
+}
+function markDirty() {
+  if (loading) return;
+  dirty = true;
+  $("btnSaveShared").disabled = false;
+  setStatus("Neuložené zmeny — klikni tlačidlo Uložiť pre všetkých.", "dirty");
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collectState())); } catch (e) { /* ignore */ }
+}
+
+function collectState() {
+  const inputs = {};
+  for (const id of IDS) inputs[id] = $(id).value;
+  return {
+    v: 1,
+    savedAt: new Date().toISOString(),
+    inputs,
+    checks: { childOn: $("childOn").checked, sweepOn: $("sweepOn").checked },
+    items: items.map(x => ({ ...x })),
+    pInv: { milan: pInv.milan.map(x => ({ ...x })), terka: pInv.terka.map(x => ({ ...x })) },
+    envelopes: envelopes.map(x => ({ ...x })),
+  };
+}
+
+function applyState(st) {
+  if (!st || typeof st !== "object") return false;
+  loading = true;
+  try {
+    if (st.inputs) for (const id of IDS) {
+      if (st.inputs[id] !== undefined && $(id)) $(id).value = st.inputs[id];
+    }
+    if (st.checks) {
+      if (typeof st.checks.childOn === "boolean") $("childOn").checked = st.checks.childOn;
+      if (typeof st.checks.sweepOn === "boolean") $("sweepOn").checked = st.checks.sweepOn;
+    }
+    if (Array.isArray(st.items)) {
+      items.length = 0;
+      st.items.forEach(x => {
+        if (x && typeof x.name === "string" && isFinite(x.amount)) {
+          items.push({ name: String(x.name), amount: +x.amount, kind: x.kind === "prijem" ? "prijem" : "vydavok",
+                       freq: FREQ_LBL[x.freq] ? x.freq : "mesacne", year: +x.year || 2027 });
+        }
+      });
+    }
+    if (st.pInv) for (const who of ["milan", "terka"]) {
+      if (Array.isArray(st.pInv[who])) {
+        pInv[who].length = 0;
+        st.pInv[who].forEach(x => {
+          if (x && typeof x.name === "string") {
+            pInv[who].push({ name: String(x.name), monthly: +x.monthly || 0, ret: isFinite(+x.ret) ? +x.ret : 7, start: +x.start || 0 });
+          }
+        });
+      }
+    }
+    if (Array.isArray(st.envelopes)) {
+      envelopes.length = 0;
+      st.envelopes.forEach(x => {
+        if (x && typeof x.name === "string") {
+          envelopes.push({ name: String(x.name), who: WHO[x.who] ? x.who : "spolocne",
+                           amount: +x.amount || 0, target: +x.target || 0 });
+        }
+      });
+    }
+    return true;
+  } catch (e) {
+    return false;
+  } finally {
+    loading = false;
+  }
+}
+
+function redrawAll() {
+  renderItems(); renderInv("milan"); renderInv("terka"); renderEnvelopes(); recompute();
+}
+
+/* ---- zdieľaný stav: načítanie ---- */
+async function loadShared(announce) {
+  try {
+    const res = await fetch(REPO.path + "?t=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const st = await res.json();
+    if (!applyState(st)) throw new Error("neplatný obsah");
+    sharedSavedAt = st.savedAt || null;
+    redrawAll();
+    dirty = false;
+    $("btnSaveShared").disabled = true;
+    setStatus("Zdieľané hodnoty" + (st.savedAt ? " (uložené " + new Date(st.savedAt).toLocaleString("sk-SK") + ")" : "") + ".", "ok");
+    /* je lokálny rozpracovaný stav novší? */
+    if (!announce) checkDraft(st.savedAt);
+    return true;
+  } catch (e) {
+    setStatus("Zdieľané hodnoty sa nepodarilo načítať — pracujem s predvolenými.", "err");
+    return false;
+  }
+}
+function checkDraft(sharedAt) {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); } catch (e) { return; }
+  if (!d || !d.savedAt) return;
+  if (sharedAt && new Date(d.savedAt) <= new Date(sharedAt)) { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} return; }
+  if (applyState(d)) {
+    redrawAll();
+    dirty = true;
+    $("btnSaveShared").disabled = false;
+    setStatus("Máš neuložené zmeny z tohto zariadenia (novšie než zdieľané).", "dirty");
+  }
+}
+
+/* ---- zdieľaný stav: uloženie cez GitHub API ---- */
+const b64 = str => {
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+};
+async function saveShared() {
+  const token = getToken();
+  if (!token) { $("tokenBox").classList.add("open"); setStatus("Na uloženie pre všetkých treba token.", "err"); return; }
+  const btn = $("btnSaveShared");
+  btn.disabled = true;
+  setStatus("Ukladám…");
+  const api = "https://api.github.com/repos/" + REPO.owner + "/" + REPO.repo + "/contents/" + REPO.path;
+  const hdr = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "Content-Type": "application/json" };
+  try {
+    /* aktuálna sha (a kontrola, či medzitým niekto neuložil) */
+    let sha = null, remoteAt = null;
+    const cur = await fetch(api + "?ref=" + REPO.branch, { headers: hdr, cache: "no-store" });
+    if (cur.ok) {
+      const meta = await cur.json();
+      sha = meta.sha;
+      try { remoteAt = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\s/g, ""))))).savedAt; } catch (e) {}
+      if (remoteAt && sharedSavedAt && new Date(remoteAt) > new Date(sharedSavedAt)) {
+        if (!confirm("Na inom zariadení boli medzitým uložené novšie hodnoty (" +
+            new Date(remoteAt).toLocaleString("sk-SK") + ").\n\nPrepísať ich tvojimi?")) {
+          setStatus("Uloženie zrušené — načítaj najprv zdieľané hodnoty.", "err");
+          btn.disabled = false;
+          return;
+        }
+      }
+    } else if (cur.status !== 404) {
+      throw new Error("čítanie zlyhalo (HTTP " + cur.status + ")");
+    }
+    const state = collectState();
+    const put = await fetch(api, {
+      method: "PUT", headers: hdr,
+      body: JSON.stringify({
+        message: "Aktualizácia hodnôt finančného plánu",
+        content: b64(JSON.stringify(state, null, 2)),
+        branch: REPO.branch,
+        ...(sha ? { sha } : {}),
+      }),
+    });
+    if (!put.ok) {
+      const err = await put.json().catch(() => ({}));
+      throw new Error((err.message || "HTTP " + put.status));
+    }
+    sharedSavedAt = state.savedAt;
+    dirty = false;
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+    setStatus("Uložené pre všetky zariadenia. Na ostatných zariadeniach klikni Načítať zdieľané.", "ok");
+  } catch (e) {
+    setStatus("Uloženie zlyhalo: " + e.message, "err");
+    btn.disabled = false;
+  }
+}
+
+$("btnSaveShared").addEventListener("click", saveShared);
+$("btnReload").addEventListener("click", () => {
+  if (dirty && !confirm("Máš neuložené zmeny — načítaním zdieľaných hodnôt sa stratia. Pokračovať?")) return;
+  try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+  loadShared(true);
+});
+$("btnToken").addEventListener("click", () => {
+  $("tokenBox").classList.toggle("open");
+  if ($("tokenBox").classList.contains("open")) $("tokenInput").value = getToken();
+});
+$("btnTokenSave").addEventListener("click", () => {
+  const t = $("tokenInput").value.trim();
+  try {
+    if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY);
+    setStatus(t ? "Token uložený v tomto prehliadači." : "Token odstránený.", "ok");
+  } catch (e) { setStatus("Token sa nepodarilo uložiť (prehliadač blokuje úložisko).", "err"); }
+  $("tokenBox").classList.remove("open");
+});
+$("btnTokenClear").addEventListener("click", () => {
+  try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+  $("tokenInput").value = "";
+  setStatus("Token odstránený.", "ok");
+});
+
+/* export / import */
+$("btnExport").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(collectState(), null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "financny-plan-" + new Date().toISOString().slice(0, 10) + ".json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+$("btnImport").addEventListener("click", () => $("fileInput").click());
+$("fileInput").addEventListener("change", ev => {
+  const f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    let st = null;
+    try { st = JSON.parse(rd.result); } catch (e) { /* ignore */ }
+    if (st && applyState(st)) {
+      redrawAll(); markDirty();
+      setStatus("Načítané zo súboru " + f.name + " — ulož pre všetkých.", "dirty");
+    } else {
+      setStatus("Súbor sa nepodarilo načítať — nie je to platný export.", "err");
+    }
+    $("fileInput").value = "";
+  };
+  rd.readAsText(f);
+});
+
+let raf = null;
+function schedule() { if (raf) cancelAnimationFrame(raf); raf = requestAnimationFrame(recompute); }
+function onEdit() { markDirty(); schedule(); }
+for (const id of IDS) $(id).addEventListener("input", onEdit);
+$("childOn").addEventListener("input", onEdit);
+$("sweepOn").addEventListener("input", onEdit);
+window.addEventListener("resize", schedule);
+if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", schedule);
+window.addEventListener("beforeunload", ev => { if (dirty) { ev.preventDefault(); ev.returnValue = ""; } });
+
+$("btnSaveShared").disabled = true;
+redrawAll();
+loadShared(false);
+</script>
+</body>
+</html>
