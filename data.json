@@ -1,11 +1,11 @@
 {
   "v": 1,
-  "savedAt": "2026-08-21T11:03:42.527Z",
+  "savedAt": "2026-08-21T12:02:07.930Z",
   "inputs": {
     "milanNet": "70000",
     "terkaNet": "50000",
     "growth": "2",
-    "utilities": "8000",
+    "utilities": "7000",
     "insHome": "686",
     "jointVar": "15000",
     "pocketM": "20000",
